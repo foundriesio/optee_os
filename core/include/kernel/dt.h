@@ -82,6 +82,9 @@ struct dt_descriptor {
 #ifdef _CFG_USE_DTB_OVERLAY
 	int frag_id;
 #endif
+#ifdef CFG_OVERLAY_ADDR
+	int is_overlay;
+#endif
 };
 
 extern uint8_t embedded_secure_dtb[];
@@ -323,6 +326,10 @@ void reinit_manifest_dt(void);
 
 /* Returns TOS_FW_CONFIG DTB or SP manifest DTB if present, otherwise NULL */
 void *get_manifest_dt(void);
+
+#ifdef CFG_OVERLAY_ADDR
+TEE_Result release_external_dt(void);
+#endif
 
 #else /* !CFG_DT */
 

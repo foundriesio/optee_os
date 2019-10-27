@@ -494,6 +494,10 @@ static int add_dt_overlay_fragment(struct dt_descriptor *dt, int ioffs)
 	int offs = 0;
 	int ret = 0;
 
+#ifdef CFG_OVERLAY_ADDR
+	if (!dt->is_overlay)
+		return ioffs;
+#endif
 	ret = snprintf(frag, sizeof(frag), "fragment@%d", dt->frag_id);
 	if (ret < 0 || (size_t)ret >= sizeof(frag))
 		return -1;
@@ -584,22 +588,26 @@ void init_external_dt(unsigned long phys_dt, size_t dt_sz)
 			panic();
 		}
 	}
-
-	ret = init_dt_overlay(dt, dt_sz);
-	if (ret < 0) {
-		EMSG("Device Tree Overlay init fail @ %#lx: error %d", phys_dt,
-		     ret);
-		panic();
+#ifdef CFG_OVERLAY_ADDR
+	if (dt->is_overlay) {
+#endif
+		ret = init_dt_overlay(dt, dt_sz);
+		if (ret < 0) {
+			EMSG("Device Tree Overlay init fail @ %#lx: error %d", phys_dt,
+			     ret);
+			panic();
+		}
+#ifdef CFG_OVERLAY_ADDR
 	}
+#endif
+		ret = fdt_open_into(dt->blob, dt->blob, dt_sz);
+		if (ret < 0) {
+			EMSG("Invalid Device Tree at %#lx: error %d", phys_dt, ret);
+			panic();
+		}
 
-	ret = fdt_open_into(dt->blob, dt->blob, dt_sz);
-	if (ret < 0) {
-		EMSG("Invalid Device Tree at %#lx: error %d", phys_dt, ret);
-		panic();
+		IMSG("Non-secure external DT found");
 	}
-
-	IMSG("Non-secure external DT found");
-}
 
 void *get_external_dt(void)
 {
@@ -645,8 +653,9 @@ static TEE_Result release_external_dt(void)
 
 	return TEE_SUCCESS;
 }
-
+#ifndef CFG_OVERLAY_ADDR
 boot_final(release_external_dt);
+#endif
 
 int add_dt_path_subnode(struct dt_descriptor *dt, const char *path,
 			const char *subnode)

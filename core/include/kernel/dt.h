@@ -82,6 +82,9 @@ struct dt_descriptor {
 #ifdef _CFG_USE_DTB_OVERLAY
 	int frag_id;
 #endif
+#ifdef CFG_OVERLAY_ADDR
+	int is_overlay;
+#endif
 };
 
 extern uint8_t embedded_secure_dtb[];

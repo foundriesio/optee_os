@@ -105,6 +105,26 @@ void plat_console_init(void)
 #endif
 }
 
+/* reserve the following drivers for exclusive OP-TEE access */
+const char *main_get_optee_exclusive_node_name(unsigned int i)
+{
+	static const char * const exclusive_drivers[] = {
+#if defined CFG_IMX_DCP
+/* list platforms */
+#if defined(PLATFORM_FLAVOR_mx6ullevk)
+		"/soc/aips-bus@2200000/crypto@2280000",
+		"/soc/bus@2200000/crypto@2280000",
+#endif
+#endif
+		NULL,
+	};
+
+	if (i < ARRAY_SIZE(exclusive_drivers))
+		return exclusive_drivers[i];
+
+	return NULL;
+}
+
 void boot_primary_init_intc(void)
 {
 #ifdef GICD_BASE

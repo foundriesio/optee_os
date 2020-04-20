@@ -1092,6 +1092,7 @@ static TEE_Result tee_rpmb_init(uint16_t dev_id)
 	TEE_Result res = TEE_SUCCESS;
 	struct rpmb_dev_info dev_info;
 	uint32_t nblocks = 0;
+	uint8_t retry = 0;
 
 	if (rpmb_dead)
 		return TEE_ERROR_COMMUNICATION;
@@ -1142,6 +1143,7 @@ static TEE_Result tee_rpmb_init(uint16_t dev_id)
 		rpmb_ctx->dev_info_synced = true;
 	}
 
+retry_key:
 	if (!rpmb_ctx->key_derived) {
 		DMSG("RPMB INIT: Deriving key");
 
@@ -1170,6 +1172,14 @@ static TEE_Result tee_rpmb_init(uint16_t dev_id)
 			res = tee_rpmb_write_and_verify_key(dev_id);
 		} else if (res != TEE_SUCCESS) {
 			EMSG("Verify key failed!");
+			if (plat_rpmb_key_is_ready() && !retry++) {
+				res = tee_otp_enable_test_hw_unique_key();
+				if (res == TEE_SUCCESS) {
+					IMSG("Try HW generated test key");
+					rpmb_ctx->key_derived = false;
+					goto retry_key;
+				}
+			}
 			EMSG("Make sure key here matches device key");
 		}
 	}

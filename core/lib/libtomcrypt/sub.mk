@@ -6,19 +6,19 @@ global-incdirs-y += include
 subdirs-y += src
 
 srcs-$(_CFG_CORE_LTC_HASH) += hash.c
-srcs-$(_CFG_CORE_LTC_HMAC) += hmac.c
+srcs-$(_CFG_CORE_LTC_HMAC) += hmac.c #/* ENABLE MD5/SHA224 for SE050 */
 srcs-$(_CFG_CORE_LTC_CMAC) += cmac.c
-srcs-$(_CFG_CORE_LTC_ECB) += ecb.c
-srcs-$(_CFG_CORE_LTC_CBC) += cbc.c
-srcs-$(_CFG_CORE_LTC_CTR) += ctr.c
+srcs-$(_CFG_CORE_LTC_ECB) += ecb.c   #/* ENABLE DES3 only for SE050 */
+srcs-$(_CFG_CORE_LTC_CBC) += cbc.c   #/* ENABLE DES3 only for SE050 */
+# srcs-$(_CFG_CORE_LTC_CTR) += ctr.c
 srcs-$(_CFG_CORE_LTC_XTS) += xts.c
 srcs-$(_CFG_CORE_LTC_CCM) += ccm.c
 srcs-$(_CFG_CORE_LTC_GCM) += gcm.c
 srcs-$(_CFG_CORE_LTC_DSA) += dsa.c
 srcs-$(_CFG_CORE_LTC_ECC) += ecc.c
-srcs-$(_CFG_CORE_LTC_RSA) += rsa.c
+srcs-$(_CFG_CORE_LTC_RSA) += rsa.c #/* ENABLE verify only for SE050 */
 srcs-$(_CFG_CORE_LTC_DH) += dh.c
-srcs-$(_CFG_CORE_LTC_AES) += aes.c
+# srcs-$(_CFG_CORE_LTC_AES) += aes.c
 
 ifdef _CFG_CORE_LTC_ACIPHER
 ifeq ($(_CFG_CORE_LTC_MPI),y)

@@ -174,7 +174,9 @@ static void init_canaries(void)
 
 void thread_check_canaries(void)
 {
-#ifdef CFG_WITH_STACK_CANARIES
+
+#if 0
+//#ifdef CFG_WITH_STACK_CANARIES
 	size_t n;
 
 	for (n = 0; n < ARRAY_SIZE(stack_tmp); n++) {

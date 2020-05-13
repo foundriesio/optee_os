@@ -499,10 +499,15 @@ CFG_TA_MBEDTLS_SELF_TEST ?= y
 CFG_CRYPTOLIB_NAME ?= tomcrypt
 CFG_CRYPTOLIB_DIR ?= core/lib/libtomcrypt
 
+# Enable library stack to support communication to NXP's SE05X
+CFG_CORE_SE05X ?= y
+
 # Enable TEE_ALG_RSASSA_PKCS1_V1_5 algorithm for signing with PKCS#1 v1.5 EMSA
 # without ASN.1 around the hash.
 ifeq ($(CFG_CRYPTOLIB_NAME),tomcrypt)
+ifneq ($(CFG_CORE_SE05X), y)
 CFG_CRYPTO_RSASSA_NA1 ?= y
+endif
 CFG_CORE_MBEDTLS_MPI ?= y
 endif
 

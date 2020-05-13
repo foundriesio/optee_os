@@ -148,6 +148,7 @@ $(call force,CFG_ARM64_core,y)
 CFG_IMX_UART ?= y
 CFG_DRAM_BASE ?= 0x40000000
 CFG_TEE_CORE_NB_CORE ?= 4
+$(call force,CFG_IMX_I2C,y)
 else ifneq (,$(filter $(PLATFORM_FLAVOR),$(imx8mn-flavorlist)))
 $(call force,CFG_IMX8MN,y)
 $(call force,CFG_ARM64_core,y)

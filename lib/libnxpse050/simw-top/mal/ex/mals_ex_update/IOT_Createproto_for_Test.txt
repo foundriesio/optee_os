@@ -1,0 +1,47 @@
+# /* From : Ref  TEST(KeyStoreGetHandle, KS_gethandleBinaryFile) */
+# /* Card manager */
+payload { apdu {
+    expectation: 0x9000
+    message: "\x00\xA4\x04\x00\x00"
+} }
+# /* Select IOT Applet on channel 0 */
+payload { apdu {
+    expectation: 0x9000
+    message: "\x00\xA4\x04\x00\x0F\xA0\x00\x00\x03\x96\x54\x53\x00\x00\x00\x01\x03\x00\x00\x00\x00"
+} }
+# /* IOTRead ID List: 80 02 00 25 00 00 07 41 02 00 00 42 01 FF 00 00 */
+payload { apdu {
+    expectation: 0x9000
+    message: "\x80\x02\x00\x25\x00\x00\x07\x41\x02\x00\x00\x42\x01\xFF\x00\x00"
+} }
+# /* IOT Delete object: 80 04 00 28 06 41 04 EF 08 10 04 */
+payload { apdu {
+    expectation: 0x6985
+    expectation: 0x9000
+    message: "\x80\x04\x00\x28\x06\x41\x04\xEF\x08\x10\x04 "
+} }
+# /* IOT ReadList: 80 02 10 25 */
+payload { apdu {
+    expectation: 0x9000
+    message: "\x80\x02\x10\x25"
+} }
+# /* IOT: 30 82 01 BF 30 82 01 65 02 09 00 88 B8 B8 BE 10 */
+payload { apdu {
+    expectation: 0x9000
+    message: "\x80\x01\x06\x00\x1C\x41\x04\xEF\x08\x10\x04\x43\x02\x00\x10\x44\x10\x30\x82\x01\xBF\x30\x82\x01\x65\x02\x09\x00\x88\xB8\xB8\xBE\x10"
+} }
+# /* IOT: 80 02 00 26 06 41 04 EF 08 10 04 */
+payload { apdu {
+    expectation: 0x9000
+    message: "\x80\x02\x00\x26\x06\x41\x04\xEF\x08\x10\x04"
+} }
+# /* IOT: 80 02 00 07 06 41 04 EF 08 10 04 */
+payload { apdu {
+    expectation: 0x9000
+    message: "\x80\x02\x00\x07\x06\x41\x04\xEF\x08\x10\x04"
+} }
+# /* IOT: 80 02 00 00 00 00 0A 41 04 EF 08 10 04 43 02 00 10 00 00 */
+payload { apdu {
+    expectation: 0x9000
+    message: "\x80\x02\x00\x00\x00\x00\x0A\x41\x04\xEF\x08\x10\x04\x43\x02\x00\x10\x00\x00"
+} }

@@ -1,0 +1,28 @@
+[general]
+CIName     	     =  UcBal
+CIDescription    =  This is a component that only implements UNIQUE interfaces.
+ReleaseNo        =  1.0
+ReleaseType      =  SOURCE
+Infixes          =  NONE
+Dependencies     =  NONE
+RunTimeDiversity =  NO
+CPUClass         =  mips, tm,  x86
+CPUType          =  r4640, tm32, i486
+OSClass          =  psos, nt
+Endianness       =  eb, el
+SrcLanguage      =  C
+ASCIIFormat      =  UNIX
+ContactPerson    =  moreuse
+EmailAddress     =  moreuse@nxp.com
+
+[interface]
+InterfaceSuites  =  UNIQUE
+
+[results]
+OnScreen  	 =  DETAILED
+
+[checks]
+Level     	 =  BL3,QL3
+
+
+Interfaces       =

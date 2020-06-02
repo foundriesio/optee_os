@@ -1,0 +1,65 @@
+
+
+PROJECT(NxpRdLib_balReg)
+
+FILE(GLOB NxpRdLib_balReg_Sources
+    ./src/phbalReg.c
+    ./src/Abend/phbalReg_Abend.c
+    ./src/Abend/phbalReg_Abend.h
+    ./src/AbendSecFw/phbalReg_AbendSecFw.c
+    ./src/AbendSecFw/phbalReg_AbendSecFw.h
+    ./src/LpcOpenI2C/phbalReg_LpcOpenI2c.c
+    ./src/LpcOpenI2C/phbalReg_LpcOpenI2c.h
+    ./src/LpcOpenSPI/phbalReg_LpcOpenSpi.c
+    ./src/LpcOpenSPI/phbalReg_LpcOpenSpi.h
+    ./src/PcscWin/phbalReg_PcscWin.c
+    ./src/PcscWin/phbalReg_PcscWin.h
+    ./src/PcscWin/phbalReg_PcscWin_Int.h
+    ./src/PipeLin/phbalReg_PipeLin.c
+    ./src/PipeLin/phbalReg_PipeLin.h
+    ./src/PipeLin/phbalReg_PipeLin_Int.c
+    ./src/PipeLin/phbalReg_PipeLin_Int.h
+    ./src/Rd70xUsbWin/phbalReg_Rd70xUsbWin.c
+    ./src/Rd70xUsbWin/phbalReg_Rd70xUsbWin.h
+    ./src/Rd70xUsbWin/phbalReg_Rd70xUsbWin_Int.c
+    ./src/Rd70xUsbWin/phbalReg_Rd70xUsbWin_Int.h
+    ./src/Rd70xUsbWin/external/Devioctl.h
+    ./src/Rd70xUsbWin/external/Usb100.h
+    ./src/Rd70xUsbWin/external/Usbdi.h
+    ./src/Rd70xUsbWin/external/Usbioctl.h
+    ./src/Rd70xUsbWin/external/Usbioctls.h
+    ./src/Rd710Sam/phbalReg_Rd710Sam.c
+    ./src/Rd710Sam/phbalReg_Rd710Sam.h
+    ./src/Rd710Sam/phbalReg_Rd710Sam_Int.c
+    ./src/Rd710Sam/phbalReg_Rd710Sam_Int.h
+    ./src/RdFpgaV6/phbalReg_RdFpgaV6.c
+    ./src/RdFpgaV6/phbalReg_RdFpgaV6.h
+    ./src/RdFpgaV6/phbalReg_RdFpgaV6_Int.c
+    ./src/RdFpgaV6/phbalReg_RdFpgaV6_Int.h
+    ./src/RdFpgaV6/external/phbalReg_RdFpgaV6_Ex.c
+    ./src/RdFpgaV6/external/phbalReg_RdFpgaV6_Ex.h
+    ./src/SerialWin/phbalReg_SerialWin.c
+    ./src/SerialWin/phbalReg_SerialWin.h
+    ./src/SerialWin/phbalReg_SerialWin_Int.h
+    ./src/SocketWin/phbalReg_SocketWin.c
+    ./src/SocketWin/phbalReg_SocketWin.h
+    ./src/SocketWin/phbalReg_SocketWin_Int.c
+    ./src/SocketWin/phbalReg_SocketWin_Int.h
+    ./src/Stub/phbalReg_Stub.h
+    ./src/Visa/phbalReg_Visa.c
+    ./src/Visa/phbalReg_Visa.h
+    ./src/Visa/external/phbalReg_Visa_Ex.c
+    ./src/Visa/external/phbalReg_Visa_Ex.h
+    ./src/Visa/external/visa.h
+    ./src/Visa/external/visatype.h
+    ./src/Visa/external/vpptype.h
+    ./src/LinuxUserSpi/phbalReg_LinuxUserSpi.c
+    ./src/LinuxUserSpi/phbalReg_LinuxUserSpi.h
+    ./src/LinuxKernelSpi/phbalReg_LinuxKernelSpi.c
+    ./src/LinuxKernelSpi/phbalReg_LinuxKernelSpi.h
+    ./src/LinuxUserI2C/phbalReg_LinuxUserI2C.c
+    ./src/LinuxUserI2C/phbalReg_LinuxUserI2C.h
+)
+ADD_LIBRARY(NxpRdLib_balReg
+    ${NxpRdLib_balReg_Sources}
+)

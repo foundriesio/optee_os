@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<!--
+Copyright 2019 NXP
+
+This software is owned or controlled by NXP and may only be used
+strictly in accordance with the applicable license terms.  By expressly
+accepting such terms or by downloading, installing, activating and/or
+otherwise using the software, you are agreeing that you have read, and
+that you agree to comply with and are bound by, such license terms.  If
+you do not agree to be bound by the applicable license terms, then you
+may not retain, install, activate or otherwise use the software.
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>6.6. WiFi EAP Demo with Raspberry Pi3 &#8212; Plug &amp; Trust MW v02.14.00 documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="6.7. PKCS#11 Standalone Library" href="../pkcs11.html" />
+    <link rel="prev" title="6.5. Introduction on Open62541 (OPC UA stack)" href="../../sss/plugin/open62541/readme.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../toc.html"><span><img src="../../_static/NXP_logo_JPG.jpg"></span>
+          MW</a>
+        <span class="navbar-text navbar-version pull-left"><b>v02.14.00</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+
+
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../toc.html">TOC <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">1. NXP Plug &amp; Trust Middleware</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../organization-of-documentation.html">1.1. Organization of Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../folder-structure.html">1.2. Folder Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../sw-prerequisites.html">1.3. List of Platform Prerequisites</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../changes/index.html">2. Changes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/pending.html">2.1. Pending Refactoring items</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/pending.html#known-limitations">2.2. Known limitations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_14_00.html">2.3. Release <code class="docutils literal notranslate"><span class="pre">v02.14.00</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_12_00.html">2.4. Release <code class="docutils literal notranslate"><span class="pre">v02.12.05</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_12_00.html#release-v02-12-04">2.5. Release <code class="docutils literal notranslate"><span class="pre">v02.12.04</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_12_00.html#release-v02-12-03">2.6. Release <code class="docutils literal notranslate"><span class="pre">v02.12.03</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_12_00.html#release-v02-12-02">2.7. Release <code class="docutils literal notranslate"><span class="pre">v02.12.02</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_12_00.html#release-v02-12-01">2.8. Release <code class="docutils literal notranslate"><span class="pre">v02.12.01</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_12_00.html#release-v02-12-00">2.9. Release <code class="docutils literal notranslate"><span class="pre">v02.12.00</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_11_03.html">2.10. Release <code class="docutils literal notranslate"><span class="pre">v02.11.03</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_11_01.html">2.11. Internal Release <code class="docutils literal notranslate"><span class="pre">v02.11.01</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_11_00.html">2.12. Release <code class="docutils literal notranslate"><span class="pre">v02.11.00</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_10_00.html">2.13. Release <code class="docutils literal notranslate"><span class="pre">v02.10.00</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_09_00.html">2.14. Release <code class="docutils literal notranslate"><span class="pre">v02.09.00</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_07_00.html">2.15. Release <code class="docutils literal notranslate"><span class="pre">v02.07.00</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_06_00.html">2.16. Release <code class="docutils literal notranslate"><span class="pre">v02.06.00</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_05_00_to_v02_03_00.html">2.17. Release <code class="docutils literal notranslate"><span class="pre">v02.05.00</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_05_00_to_v02_03_00.html#release-v02-04-00">2.18. Release <code class="docutils literal notranslate"><span class="pre">v02.04.00</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_05_00_to_v02_03_00.html#release-02-03-00">2.19. Release <code class="docutils literal notranslate"><span class="pre">02.03.00</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../stack/index.html">3. Plug &amp; Trust MW Stack</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../stack/features.html">3.1. Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../stack/features.html#plug-trust-mw-block-diagram">3.2. Plug &amp; Trust MW : Block Diagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../sss-apis.html">3.3. SSS APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../stack/param_checks.html">3.4. Parameter Check &amp; Conventions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../stack/i2cm.html">3.5. I2CM / Secure Sensor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../stack/logging.html">3.6. Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../stack/platf-scp-from-fs.html">3.7. Using Platform SCP Keys from File System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../stack/auth/auth-objects.html">3.8. Auth Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../stack/auth/auth-objects-userid.html">3.9. Auth Objects : UserID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../stack/auth/auth-objects-aeskey.html">3.10. Auth Objects : AESKey</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../stack/auth/auth-objects-eckey.html">3.11. Auth Objects : ECKey</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../stack/key-id-range.html">3.12. Key Id Range and Purpose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../stack/key-id-range.html#trust-provisioned-keyids">3.13. Trust provisioned KeyIDs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../building/index.html">4. Building / Compiling</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../building/windows.html">4.1. Windows Build</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../building/frdm-k64f-sdk.html">4.2. Import MCUXPresso projects from SDK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../building/frdm-k64f-cmake.html">4.3. Freedom K64F Build (CMake - Advanced)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../building/imx6.html">4.4. i.MX Linux Build</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../building/rpi3.html">4.5. Raspberry Pi Build</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../building/cmake.html">4.6. CMake</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../scripts/cmake_options.html">4.7. CMake Options</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../demos/index.html">5. Demo and Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/demo-list.html">5.1. DEMO List</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../sss/ex/doc/sss-api-examples.html">5.2. SSS API Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/ksdk/aws_jitr/readme.html">5.3. AWS Demo for KSDK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/linux/aws/readme.html">5.4. AWS Demo for iMX Linux / RaspberryPi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/ksdk/gcp/readme.html">5.5. GCP Demo for KSDK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/linux/gcp/readme.html">5.6. GCP Demo for iMX Linux / Raspberry Pi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/ksdk/ibm_watson/Readme.html">5.7. IBM Watson Demo for KSDK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/linux/ibm_watson_iot/readme.html">5.8. IBM Watson Demo for iMX Linux / Raspberry Pi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/ksdk/azure/Readme.html">5.9. Azure Demo for KSDK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/linux/azure/readme.html">5.10. Azure Demo for iMX Linux / Raspberry Pi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/linux/sss_pkcs11/Readme.html">5.11. Greengrass Demo for Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/linux/tls_client/tls_client_demo.html">5.12. OpenSSL Engine: TLS Client example for iMX/Rpi3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/opc_ua/doc/readme.html">5.13. OPC UA (Open62541) Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_minimal/readme.html">5.14. SE05X Minimal example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_Get_Info/Readme.html">5.15. SE05X Get Info example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/apdu_player/Readme.html">5.16. APDU Player Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_policy/Readme.html">5.17. Using policies for secure objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_Get_Certificate/Readme.html">5.18. Get Certificate from the SE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_RotatePlatformSCP03Keys/Readme.html">5.19. SE05X Rotate PlatformSCP Keys Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/ex_i2cMaster/readme.html">5.20. I2C Master Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/ex_se05x_WiFiKDF/Readme.html">5.21. SE05X WiFi KDF Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_import/readme.html">5.22. SE05X Import Transient objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_export/readme.html">5.23. SE05X Export Transient objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_ImportExternalObjectPrepare/Readme.html">5.24. Import External Object Prepare</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_ImportExternalObjectCreate/Readme.html">5.25. Import External Object Create</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_MandatePlatformSCP/Readme.html">5.26. SE05X Mandate SCP example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_ReadWithAttestation/Readme.html">5.27. Read object with Attestation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_TransportLock/readme.html">5.28. SE05X Transport Lock example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_TransportUnLock/readme.html">5.29. SE05X Transport UnLock example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_TimeStamp/Readme.html">5.30. SE05X Timestamp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/nxpnfcrdlib/ex_Ev2Prepare_se05x/readme.html">5.31. MIFARE DESFire EV2 : Prepare SE050</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/nxpnfcrdlib/ex_Ev2Prepare_Card/readme.html">5.32. MIFARE DESFire EV2 : Prepare MFDFEV2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/nxpnfcrdlib/ex_Ev2Auth_se05x/readme.html">5.33. MIFARE DESFire EV2 : Authentication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/nxpnfcrdlib/ex_Ev2ChangeKey_se05x/readme.html">5.34. MIFARE DESFire EV2 : Change Key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/nxpnfcrdlib/ex_Ev2DivChngKey_se05x/readme.html">5.35. MIFARE DESFire EV2 : Diversified Change Key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/seTool/Readme.html">5.36. Tool to create Reference key file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/certificate_demo/Readme.html">5.37. Building a self-signed certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_GetAPDUBuffer/Readme.html">5.38. Write APDU to buffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/eou_config_ibm.html">5.39. Ease of Use configuration - IBM Watson</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/eou_config_gcp.html">5.40. Ease of Use configuration - Google Cloud Platform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/eou_config_azure.html">5.41. Ease of Use configuration - Azure IoT Hub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/eou_config_aws.html">5.42. Ease of Use configuration - AWS IoT Console</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">6. Plugins / Add-ins</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../sss/plugin/openssl/scripts/readme.html">6.1. Introduction on OpenSSL engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../sss/plugin/mbedtls/scripts/readme.html">6.2. Introduction on mbedTLS ALT Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../sss/plugin/psa/Readme.html">6.3. Platform Security Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../akm.html">6.4. Android Key master</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../sss/plugin/open62541/readme.html">6.5. Introduction on Open62541 (OPC UA stack)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">6.6. WiFi EAP Demo with Raspberry Pi3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pkcs11.html">6.7. PKCS#11 Standalone Library</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli-tool.html">7. CLI Tool</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../pycli/doc/introduction.html">7.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pycli/doc/block-diagram.html">7.2. Block Diagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pycli/doc/pre-steps.html">7.3. Steps needed before running <code class="docutils literal notranslate"><span class="pre">ssscli</span></code> tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pycli/doc/running.html">7.4. Running the <code class="docutils literal notranslate"><span class="pre">ssscli</span></code> tool - Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pycli/Provisioning/readme.html">7.5. CLI Provisioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pycli/doc/readme_usage_examples.html">7.6. Usage Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pycli/doc/cli_commands_list.html">7.7. List of <code class="docutils literal notranslate"><span class="pre">ssscli</span></code> commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../pycli/doc/cli_data_format.html">7.8. CLI Data formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../appendix/upload_se05x_using_pycli.html">7.9. Upload keys and certificates to SE05X using Pycli tool</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../a71ch.html">8. A71CH</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../a71ch/a71ch_sss.html">8.1. A71CH and SSS API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../a71ch/a71ch_miscellaneous.html">8.2. Miscellaneous</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../a71ch/a71ch_legacy_host_api.html">8.3. A71CH Legacy API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../a71ch/a71ch_legacy_hlse_api.html">8.4. A71CH Legacy HLSE (Generic) API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../a71ch/a71ch_configure_tool.html">8.5. A71CH Legacy Configure Tool</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix.html">9. Appendix</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../appendix/glossary.html">9.1. Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../appendix/vcom.html">9.2. APDU Commands over VCOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../appendix/vs2019-setup.html">9.3. Visual Studio 2019 Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../appendix/ide_mcux.html">9.4. Setting up MCUXPresso IDE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev-platforms.html">9.5. Development Platforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../appendix/se_uid.html">9.6. How to get SE Platform Information and UID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../appendix/version_info.html">9.7. Version Information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/Certificate_Chains/ROOT/Readme.html">9.8. Certificate Chains : ROOT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/Certificate_Chains/0004_A1F4/Readme.html">9.9. Certificate Chains : DEV Kit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../appendix/rjct_server.html">9.10. JRCP_v1 Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../appendix/platfscp.html">9.11. Using own Platform SCP03 Keys</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../appendix/apdu_write_to_buffer.html">9.12. Write APDU to buffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/api_list.html">9.13. Plug &amp; Trust MW APIs</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">6.6. WiFi EAP Demo with Raspberry Pi3</a><ul>
+<li><a class="reference internal" href="#prerequisites">6.6.1. Prerequisites</a></li>
+<li><a class="reference internal" href="#introduction">6.6.2. Introduction</a></li>
+<li><a class="reference internal" href="#setting-up-access-point">6.6.3. Setting up Access point</a></li>
+<li><a class="reference internal" href="#setting-up-freeradius-server-on-ubuntu">6.6.4. Setting up freeradius Server on Ubuntu</a></li>
+<li><a class="reference internal" href="#setting-up-raspberry-pi3">6.6.5. Setting up Raspberry Pi3</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+
+
+
+
+
+  <li>
+    <a href="../../sss/plugin/open62541/readme.html" title="Previous Chapter: 6.5. Introduction on Open62541 (OPC UA stack)"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; 6.5. Introduc...</span>
+    </a>
+  </li>
+  <li>
+    <a href="../pkcs11.html" title="Next Chapter: 6.7. PKCS#11 Standalone Library"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">6.7. PKCS#11 ... &raquo;</span>
+    </a>
+  </li>
+
+
+
+
+
+          </ul>
+
+
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary">
+
+<div class="sidebar-header">
+    <h3>Plug &amp; Trust MW</h3>
+</div>
+
+<div class="row">
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">1. NXP Plug &amp; Trust Middleware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changes/index.html">2. Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../stack/index.html">3. Plug &amp; Trust MW Stack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../building/index.html">4. Building / Compiling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../demos/index.html">5. Demo and Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">6. Plugins / Add-ins</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../sss/plugin/openssl/scripts/readme.html">6.1. Introduction on OpenSSL engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../sss/plugin/mbedtls/scripts/readme.html">6.2. Introduction on mbedTLS ALT Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../sss/plugin/psa/Readme.html">6.3. Platform Security Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../akm.html">6.4. Android Key master</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../sss/plugin/open62541/readme.html">6.5. Introduction on Open62541 (OPC UA stack)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">6.6. WiFi EAP Demo with Raspberry Pi3</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#prerequisites">6.6.1. Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#introduction">6.6.2. Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setting-up-access-point">6.6.3. Setting up Access point</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setting-up-freeradius-server-on-ubuntu">6.6.4. Setting up freeradius Server on Ubuntu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setting-up-raspberry-pi3">6.6.5. Setting up Raspberry Pi3</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../pkcs11.html">6.7. PKCS#11 Standalone Library</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli-tool.html">7. CLI Tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../a71ch.html">8. A71CH</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix.html">9. Appendix</a></li>
+</ul>
+
+</div>
+<div class="row">
+    <form class="form" action="../../search.html" method="get">
+     <div class="form-group">
+      <label for="Search">Search:</label>
+      <input type="text" name="q" class="form-control" placeholder="Search" />
+     </div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+
+  <div class="section" id="wifi-eap-demo-with-raspberry-pi3">
+<span id="wifi-eap"></span><h1><span class="section-number">6.6. </span>WiFi EAP Demo with Raspberry Pi3<a class="headerlink" href="#wifi-eap-demo-with-raspberry-pi3" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="prerequisites">
+<h2><span class="section-number">6.6.1. </span>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Rsapberry pi3 with raspbian OS installed.</p></li>
+<li><p>Ubuntu machine to run freeRadius</p></li>
+<li><p>Access point (WPA/WPA2 Enterprise capable)</p></li>
+</ul>
+</div>
+<div class="section" id="introduction">
+<h2><span class="section-number">6.6.2. </span>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>The image shows the wifi EAP demo set up</p>
+<img alt="../../_images/wifiEAP.jpg" src="../../_images/wifiEAP.jpg" />
+</div>
+<div class="section" id="setting-up-access-point">
+<h2><span class="section-number">6.6.3. </span>Setting up Access point<a class="headerlink" href="#setting-up-access-point" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Connect Access point (WPA/WPA2 Enterprise capable) and Linux machine over a ethernet cable,</p></li>
+<li><p>Log in to access point</p></li>
+<li><p>Under wireless settings change security to <code class="docutils literal notranslate"><span class="pre">WPA/WPA2</span> <span class="pre">Enterprise</span></code> and give
+the ip address of Ubuntu machine to RADIUS Server IP</p></li>
+<li><p>RADIUS Server Port - 1812</p></li>
+<li><p>Enter any password in RADIUS Server password field</p></li>
+</ol>
+</div>
+<div class="section" id="setting-up-freeradius-server-on-ubuntu">
+<h2><span class="section-number">6.6.4. </span>Setting up freeradius Server on Ubuntu<a class="headerlink" href="#setting-up-freeradius-server-on-ubuntu" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><dl>
+<dt>Install freeradius server on ubuntu machine.</dt><dd><p><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt-get</span> <span class="pre">install</span> <span class="pre">freeradius</span></code></p>
+<p>Freeradius is installed at /etc/freeradius</p>
+</dd>
+</dl>
+</li>
+<li><p>Now add the access point ip address and radius password to client configuration file - <code class="docutils literal notranslate"><span class="pre">/etc/freeradius/clients.conf</span></code></p>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>For freeradius 2.2.8 add,
+    client 192.168.2.1/16 {
+        secret      = &lt;radius server password mentioned in previous section&gt;
+        shortname   = &lt;Any short name&gt;
+    }
+
+For freeradius 3.0 add,
+    client router {
+        ipaddr      = 192.168.2.1
+        secret      = &lt;radius server password mentioned in previous section&gt;
+    }
+</pre></div>
+</div>
+</li>
+<li><p>Generate client and server keys. Scripts to generate keys and certificates are available in freeradius source code</p>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/FreeRADIUS/freeradius-server.git
+cd freeradius-server
+</pre></div>
+</div>
+</li>
+<li><dl>
+<dt>Add client email address and common name in <code class="docutils literal notranslate"><span class="pre">/freeradius-server/raddb/certs/client.cnf</span></code></dt><dd><img alt="../../_images/user_in_client_conf.jpg" src="../../_images/user_in_client_conf.jpg" />
+</dd>
+</dl>
+</li>
+<li><p>Execute bootstrap script at /freeradius-server/raddb/certs</p>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>./bootstrap
+</pre></div>
+</div>
+</li>
+<li><p>Keys and certificates are generated in folder <code class="docutils literal notranslate"><span class="pre">/freeradius-server/raddb/certs</span></code></p></li>
+<li><p>Copy root ca cert, server key and server certificate to installed freeradius path</p>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>cp /freeradius-server/raddb/certs/ca.pem /etc/freeradius/certs/
+cp /freeradius-server/raddb/certs/server.key /etc/freeradius/certs/
+cp /freeradius-server/raddb/certs/server.pem /etc/freeradius/certs/
+cp /freeradius-server/raddb/certs/dh /etc/freeradius/certs/
+</pre></div>
+</div>
+</li>
+<li><p>Add client details to user configuration file</p>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>For freeradius 2.2.8, add details in /etc/freeradius/users file
+
+    &lt;user_name&gt; Cleartext-password := &lt;user_password&gt;
+    Reply-Message = &quot;&lt;message&gt;&quot;
+
+
+For freeradius 3.0 add details in /etc/freeradius/mods-config/files/authorize file
+
+    &lt;user_name&gt; Auth-Type := Accept, Cleartext-password := &lt;user_password&gt;
+    Reply-Message = &quot;&lt;message&gt;&quot;
+</pre></div>
+</div>
+</li>
+<li><p>Make the following changes to freeradius conf file at</p>
+<p>For freeradius 2.2.8 -  <code class="docutils literal notranslate"><span class="pre">/etc/freeradius/eap.conf</span></code>.</p>
+<p>For freeradius 3.0 -  <code class="docutils literal notranslate"><span class="pre">/etc/freeradius/mods-available/eap</span></code>.</p>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>    @@ -199,6 +199,7 @@ eap {
+        #  *one* CA certificate.
+        #
+        # ca_file = /etc/ssl/certs/ca-certificates.crt
+<span class="gi">+       ca_file = /etc/freeradius/3.0/certs/ca.pem</span>
+
+        #  OpenSSL will automatically create certificate chains,
+        #  unless we tell it to not do that.  The problem is that
+<span class="gu">@@ -498,7 +499,7 @@ eap {</span>
+            #
+            #  You should also delete all of the files
+            #  in the directory when the server starts.
+<span class="gd">-   #       tmpdir = /tmp/radiusd</span>
+<span class="gi">+           tmpdir = /tmp/radiusd</span>
+
+            #  The command used to verify the client cert.
+            #  We recommend using the OpenSSL command-line
+<span class="gu">@@ -703,7 +704,8 @@ eap {</span>
+        # client certificate with EAP-TTLS, so this option is unlikely
+        # to be usable for most people.
+        #
+<span class="gd">-   #   require_client_cert = yes</span>
+<span class="gi">+       EAP-TLS-Require-Client-Cert = Yes</span>
+<span class="gi">+       require_client_cert = yes</span>
+    }
+</pre></div>
+</div>
+</li>
+<li><p>Create a radiusd directory in /tmp and assign permission for freerad user</p>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>mkdir tmp/radiusd
+sudo chown freerad:freerad tmp/radiusd
+</pre></div>
+</div>
+</li>
+<li><p>Start free radius server as</p>
+<div class="highlight-diff notranslate"><div class="highlight"><pre><span></span>sudo freeradiux -X
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="setting-up-raspberry-pi3">
+<h2><span class="section-number">6.6.5. </span>Setting up Raspberry Pi3<a class="headerlink" href="#setting-up-raspberry-pi3" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>Copy plug and trust middleware package to rpi3 at <code class="docutils literal notranslate"><span class="pre">/home/pi</span></code> location</p></li>
+<li><p>Modify the openssl engine id  to <code class="docutils literal notranslate"><span class="pre">pkcs11</span></code> in openssl engine header file
+<code class="docutils literal notranslate"><span class="pre">ax_embSeEngine.h</span></code>.</p>
+<p>Location: <code class="docutils literal notranslate"><span class="pre">simw-top/sss/plugin/openssl/engine/inc/ax_embSeEngine.h</span></code></p>
+</li>
+<li><p>Build openssl engine</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> simw-top
+python scripts/create_cmake_projects.py
+<span class="nb">cd</span> ../simw-top_build/raspbian_native_se050_t1oi2c
+make install
+ldconfig /usr/local/lib
+</pre></div>
+</div>
+</li>
+<li><p>Copy client key (client.key), client certificate (client.crt), Root CA
+certificate (ca.pem) from ubuntu machine (<code class="docutils literal notranslate"><span class="pre">freeradius-server/certs/</span></code>)
+to raspberry pi at location <code class="docutils literal notranslate"><span class="pre">/home/pi/wifiEAP</span></code></p></li>
+<li><p>Refer to <a class="reference internal" href="../../cli-tool.html#cli-tool"><span class="std std-ref">CLI Tool</span></a> for pyCLI tool setup. Using pycli tool, create a reference pem file for client key</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> /home/pi/wifiEAP
+openssl rsa -in client.key -out client.pem
+ssscli connect se050 t1oi2c none
+ssscli <span class="nb">set</span> rsa pair 0x1234 client.pem
+ssscli refpem rsa pair 0x1234 client_ref.pem
+</pre></div>
+</div>
+</li>
+<li><p>Add folowing network configuration to wpa_supplicant.conf file
+(<code class="docutils literal notranslate"><span class="pre">/etc/wpa_supplicant</span></code>)</p>
+<div class="highlight-cfg notranslate"><div class="highlight"><pre><span></span><span class="na">pkcs11_engine_path</span><span class="o">=</span><span class="s">/usr/local/lib/libsss_engine.so</span>
+<span class="na">pkcs11_module_path</span><span class="o">=</span><span class="s">/usr/local/lib/libsss_engine.so</span>
+
+<span class="na">network</span><span class="o">=</span><span class="s">{</span>
+<span class="s">    ssid=&quot;&lt;SSID&gt;&quot;</span>
+<span class="s">    priority=1</span>
+<span class="s">    engine=1</span>
+<span class="s">    key_mgmt=WPA-EAP</span>
+<span class="s">    pairwise=CCMP TKIP</span>
+<span class="s">    auth_alg=OPEN</span>
+<span class="s">    eap=TTLS                                # When using freeradius 2.2.8, use TLS</span>
+<span class="s">    identity=&quot;&lt;user_name&gt;&quot;                  # from user configuration file</span>
+<span class="s">    password=&quot;&lt;user_password&gt;&quot;              # from user configuration file</span>
+
+    <span class="na">ca_cert</span><span class="o">=</span><span class="s">&quot;/home/pi/wifiEAP/&lt;ROOT_CA_CERT_FILE&gt;&quot;</span>
+<span class="s">    client_cert=&quot;/home/pi/wifiEAP/&lt;CLIENT_CERT_FILE&gt;&quot;</span>
+<span class="s">    private_key=&quot;/home/pi/wifiEAP/&lt;CLIENT_KEY_REFERENCE_FILE&gt;&quot;</span>
+<span class="s">    private_key_passwd=&quot;&lt;PRIVATE_KEY_PASSWORD&gt;&quot;                   # If key file is not encrypted with pass phrase, comment this line.</span>
+
+    <span class="na">ca_cert2</span><span class="o">=</span><span class="s">&quot;/home/pi/wifiEAP/&lt;ROOT_CA_CERT_FILE&gt;&quot;</span>
+<span class="s">    client_cert2=&quot;/home/pi/wifiEAP/&lt;CLIENT_CERT_FILE&gt;&quot;</span>
+<span class="s">    private_key2=&quot;/home/pi/wifiEAP/&lt;CLIENT_KEY_REFERENCE_FILE&gt;&quot;</span>
+<span class="s">    private_key_passwd=&quot;&lt;PRIVATE_KEY_PASSWORD&gt;&quot;                   # If key file is not encrypted with pass phrase, comment this line.</span>
+<span class="na">}</span>
+</pre></div>
+</div>
+</li>
+<li><p>Change the engine_id to <code class="docutils literal notranslate"><span class="pre">pkcs11</span></code> in openssl configuration file (/simw-top/demos/linux/common/openssl11_sss_se050.cnf)</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>e4sss_se050_section<span class="o">]</span>
+<span class="nv">engine_id</span> <span class="o">=</span> pkcs11
+<span class="nv">dynamic_path</span> <span class="o">=</span> /usr/local/lib/libsss_engine.so
+<span class="nv">init</span> <span class="o">=</span> <span class="m">1</span>
+<span class="nv">default_algorithms</span> <span class="o">=</span> RAND,RSA,EC
+</pre></div>
+</div>
+</li>
+<li><p>Set the openssl config path as call:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">OPENSSL_CONF</span><span class="o">=</span>/simw-top/demos/linux/common/openssl11_sss_se050.cnf
+</pre></div>
+</div>
+</li>
+<li><p>kill wpa_supplicant process as</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pkill wpa_supplicant
+</pre></div>
+</div>
+</li>
+<li><p>Restart wpa_supplicant process as</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>wpa_supplicant -c/etc/wpa_supplicant/wpa_supplicant.conf -iwlan0 -Dwext
+</pre></div>
+</div>
+</li>
+<li><p>On successful TLS handshake, Rpi should be assigned with a valid IP
+address.</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ol class="arabic simple">
+<li><p>Tested with openssl version of 1.1.0j on raspberry pi.</p></li>
+<li><p>Ip address mentioned above is for illustrative purpose.</p></li>
+</ol>
+</div>
+</div>
+</div>
+
+
+    </div>
+
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+
+    </p>
+    <p>
+        &copy; Copyright 2018-2019, NXP.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

@@ -1,0 +1,73 @@
+# _____________________________________________________________________________
+# Product Description
+# Call ..\..\NxpNfcRdLib\docs\22_rel_doc\version_update.py . src\NNC_uC_VCOM_Ver.h
+sw_c_define_name = "NNC_uC_VCOM"
+sw_product_name  = sw_c_define_name
+sw_cs_namespace  = sw_c_define_name
+#
+sw_v_major       = "03"     # Major Release NNX
+sw_v_minor       = "04"     # SW Minor Version
+sw_v_dev         = "00"     # SW Development Version
+sw_maturity      = "B"      # SW Maturity "A" Alpha, "B":Beta, "P": Production
+sw_metastring    = ""       # Any meta string
+# _____________________________________________________________________________
+#
+# History: Descending
+#
+# 03.04.00  : [PN7462AU] [artf548979] Handling LED GPIOs in firmware by masking its usage for status mapping
+#           : [PN7462AU] Added GetVersion for NNC_uC_Version
+#           : [artf553395] [RC663] Increased FIFO buffer to 512 bytes to accomodate bigger buffers.
+#           : Modified Waterlevel to a higher value to make sure the VCOM communication is
+#           : always alive and not taken over by higher baud rate transactions.
+#           :
+# 03.03.00  : [PN7462AU] Added Autocoll related DUT calls for PN7462AU Card Emulation
+#           :
+# 03.02.03  : Merged with latest NxpRdLib v05.14.00 for working copy of ICode
+#           : on RC661 IC
+#           : [PN7462AU] Updated MAX Payload Size to 268 which shall be 32 bit aligned. Fixed issue
+#           : found in performing MFC Authenticate.
+#           :
+# 03.02.02  : Added PRBS
+#           :
+# 03.02.01  : Added delay in secondary threads of HCE_T4T for execution of main thread
+#           : and handle responses to UI on all platforms
+#           :
+# 03.02.00  : EMVCo secondary application fixed according to the latest RdLib merge
+#           : in PN7462AU
+#           :
+# 03.01.02  : Fix for EMVCo
+#           :
+# 03.01.00  : Using NxpNfcRdLib_05.11.00_20171206
+#           :
+# 03.01.00  : Fix when 0xFF is set as TestBus status in PN580 EEPROM.
+#           : Read 2 bytes of version info to be sure that we are reading all 0xFFs
+#           :
+# 03.01.00  : Fix when 0xFF is set as TestBus status in PN580 EEPROM.
+#           : Read 2 bytes of version info to be sure that we are reading all 0xFFs
+#           :
+# 03.00.00  : For 18000P3M3 support.
+#           :
+# 02.02.00  : Addresses [artf253094] If PN5180 FW download is interrupted and
+#           : FW Does not boot up - phUcBal is not repsonsive
+#           :
+# 02.01.00  : Added K8x porting layer
+#           :
+# 02.00.00  : MCUX Based build
+#           : Porting layer for x86 added to execute NxpNfcRdLib from PC
+#           : Ported code from phPlatform based design to DAL based design
+#           :
+# 01.04.00  : Configurable delay for WaitIRQDelayWithTestBus
+#           :
+# 01.03.00  : Show NFC Cockpit as URL for NDEF
+#           :
+# 01.02.00  : For PN5180: Use phOsal_ThreadDelay() just inside the
+#           : secondary firmware task to allow lower priority Host
+#           : interface task to reply back to Host.
+#           : And also use phOsal_ThreadDelay() while waiting for
+#           : IRQ.
+#           :
+# 01.01.00  : For PN5180 : Enable Handling of IRQ Polling
+#           :
+# 01.00.00  : Intial Release
+#           :
+# _____________________________________________________________________________

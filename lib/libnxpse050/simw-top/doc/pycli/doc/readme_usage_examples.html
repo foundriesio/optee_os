@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<!--
+Copyright 2019 NXP
+
+This software is owned or controlled by NXP and may only be used
+strictly in accordance with the applicable license terms.  By expressly
+accepting such terms or by downloading, installing, activating and/or
+otherwise using the software, you are agreeing that you have read, and
+that you agree to comply with and are bound by, such license terms.  If
+you do not agree to be bound by the applicable license terms, then you
+may not retain, install, activate or otherwise use the software.
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>7.6. Usage Examples &#8212; Plug &amp; Trust MW v02.14.00 documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="7.7. List of ssscli commands" href="cli_commands_list.html" />
+    <link rel="prev" title="7.5. CLI Provisioning" href="../Provisioning/readme.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../toc.html"><span><img src="../../_static/NXP_logo_JPG.jpg"></span>
+          MW</a>
+        <span class="navbar-text navbar-version pull-left"><b>v02.14.00</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+
+
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../toc.html">TOC <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">1. NXP Plug &amp; Trust Middleware</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../organization-of-documentation.html">1.1. Organization of Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../folder-structure.html">1.2. Folder Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../sw-prerequisites.html">1.3. List of Platform Prerequisites</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../changes/index.html">2. Changes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/pending.html">2.1. Pending Refactoring items</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/pending.html#known-limitations">2.2. Known limitations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_14_00.html">2.3. Release <code class="docutils literal notranslate"><span class="pre">v02.14.00</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_12_00.html">2.4. Release <code class="docutils literal notranslate"><span class="pre">v02.12.05</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_12_00.html#release-v02-12-04">2.5. Release <code class="docutils literal notranslate"><span class="pre">v02.12.04</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_12_00.html#release-v02-12-03">2.6. Release <code class="docutils literal notranslate"><span class="pre">v02.12.03</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_12_00.html#release-v02-12-02">2.7. Release <code class="docutils literal notranslate"><span class="pre">v02.12.02</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_12_00.html#release-v02-12-01">2.8. Release <code class="docutils literal notranslate"><span class="pre">v02.12.01</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_12_00.html#release-v02-12-00">2.9. Release <code class="docutils literal notranslate"><span class="pre">v02.12.00</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_11_03.html">2.10. Release <code class="docutils literal notranslate"><span class="pre">v02.11.03</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_11_01.html">2.11. Internal Release <code class="docutils literal notranslate"><span class="pre">v02.11.01</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_11_00.html">2.12. Release <code class="docutils literal notranslate"><span class="pre">v02.11.00</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_10_00.html">2.13. Release <code class="docutils literal notranslate"><span class="pre">v02.10.00</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_09_00.html">2.14. Release <code class="docutils literal notranslate"><span class="pre">v02.09.00</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_07_00.html">2.15. Release <code class="docutils literal notranslate"><span class="pre">v02.07.00</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_06_00.html">2.16. Release <code class="docutils literal notranslate"><span class="pre">v02.06.00</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_05_00_to_v02_03_00.html">2.17. Release <code class="docutils literal notranslate"><span class="pre">v02.05.00</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_05_00_to_v02_03_00.html#release-v02-04-00">2.18. Release <code class="docutils literal notranslate"><span class="pre">v02.04.00</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changes/v02_05_00_to_v02_03_00.html#release-02-03-00">2.19. Release <code class="docutils literal notranslate"><span class="pre">02.03.00</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../stack/index.html">3. Plug &amp; Trust MW Stack</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../stack/features.html">3.1. Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../stack/features.html#plug-trust-mw-block-diagram">3.2. Plug &amp; Trust MW : Block Diagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../sss-apis.html">3.3. SSS APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../stack/param_checks.html">3.4. Parameter Check &amp; Conventions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../stack/i2cm.html">3.5. I2CM / Secure Sensor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../stack/logging.html">3.6. Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../stack/platf-scp-from-fs.html">3.7. Using Platform SCP Keys from File System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../stack/auth/auth-objects.html">3.8. Auth Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../stack/auth/auth-objects-userid.html">3.9. Auth Objects : UserID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../stack/auth/auth-objects-aeskey.html">3.10. Auth Objects : AESKey</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../stack/auth/auth-objects-eckey.html">3.11. Auth Objects : ECKey</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../stack/key-id-range.html">3.12. Key Id Range and Purpose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../stack/key-id-range.html#trust-provisioned-keyids">3.13. Trust provisioned KeyIDs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../building/index.html">4. Building / Compiling</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../building/windows.html">4.1. Windows Build</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../building/frdm-k64f-sdk.html">4.2. Import MCUXPresso projects from SDK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../building/frdm-k64f-cmake.html">4.3. Freedom K64F Build (CMake - Advanced)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../building/imx6.html">4.4. i.MX Linux Build</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../building/rpi3.html">4.5. Raspberry Pi Build</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../building/cmake.html">4.6. CMake</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../scripts/cmake_options.html">4.7. CMake Options</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../demos/index.html">5. Demo and Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/demo-list.html">5.1. DEMO List</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../sss/ex/doc/sss-api-examples.html">5.2. SSS API Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/ksdk/aws_jitr/readme.html">5.3. AWS Demo for KSDK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/linux/aws/readme.html">5.4. AWS Demo for iMX Linux / RaspberryPi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/ksdk/gcp/readme.html">5.5. GCP Demo for KSDK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/linux/gcp/readme.html">5.6. GCP Demo for iMX Linux / Raspberry Pi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/ksdk/ibm_watson/Readme.html">5.7. IBM Watson Demo for KSDK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/linux/ibm_watson_iot/readme.html">5.8. IBM Watson Demo for iMX Linux / Raspberry Pi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/ksdk/azure/Readme.html">5.9. Azure Demo for KSDK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/linux/azure/readme.html">5.10. Azure Demo for iMX Linux / Raspberry Pi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/linux/sss_pkcs11/Readme.html">5.11. Greengrass Demo for Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/linux/tls_client/tls_client_demo.html">5.12. OpenSSL Engine: TLS Client example for iMX/Rpi3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/opc_ua/doc/readme.html">5.13. OPC UA (Open62541) Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_minimal/readme.html">5.14. SE05X Minimal example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_Get_Info/Readme.html">5.15. SE05X Get Info example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/apdu_player/Readme.html">5.16. APDU Player Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_policy/Readme.html">5.17. Using policies for secure objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_Get_Certificate/Readme.html">5.18. Get Certificate from the SE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_RotatePlatformSCP03Keys/Readme.html">5.19. SE05X Rotate PlatformSCP Keys Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/ex_i2cMaster/readme.html">5.20. I2C Master Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/ex_se05x_WiFiKDF/Readme.html">5.21. SE05X WiFi KDF Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_import/readme.html">5.22. SE05X Import Transient objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_export/readme.html">5.23. SE05X Export Transient objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_ImportExternalObjectPrepare/Readme.html">5.24. Import External Object Prepare</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_ImportExternalObjectCreate/Readme.html">5.25. Import External Object Create</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_MandatePlatformSCP/Readme.html">5.26. SE05X Mandate SCP example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_ReadWithAttestation/Readme.html">5.27. Read object with Attestation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_TransportLock/readme.html">5.28. SE05X Transport Lock example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_TransportUnLock/readme.html">5.29. SE05X Transport UnLock example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_TimeStamp/Readme.html">5.30. SE05X Timestamp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/nxpnfcrdlib/ex_Ev2Prepare_se05x/readme.html">5.31. MIFARE DESFire EV2 : Prepare SE050</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/nxpnfcrdlib/ex_Ev2Prepare_Card/readme.html">5.32. MIFARE DESFire EV2 : Prepare MFDFEV2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/nxpnfcrdlib/ex_Ev2Auth_se05x/readme.html">5.33. MIFARE DESFire EV2 : Authentication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/nxpnfcrdlib/ex_Ev2ChangeKey_se05x/readme.html">5.34. MIFARE DESFire EV2 : Change Key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/nxpnfcrdlib/ex_Ev2DivChngKey_se05x/readme.html">5.35. MIFARE DESFire EV2 : Diversified Change Key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/seTool/Readme.html">5.36. Tool to create Reference key file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/certificate_demo/Readme.html">5.37. Building a self-signed certificate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/se05x/se05x_GetAPDUBuffer/Readme.html">5.38. Write APDU to buffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/eou_config_ibm.html">5.39. Ease of Use configuration - IBM Watson</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/eou_config_gcp.html">5.40. Ease of Use configuration - Google Cloud Platform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/eou_config_azure.html">5.41. Ease of Use configuration - Azure IoT Hub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/eou_config_aws.html">5.42. Ease of Use configuration - AWS IoT Console</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../plugins/index.html">6. Plugins / Add-ins</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../sss/plugin/openssl/scripts/readme.html">6.1. Introduction on OpenSSL engine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../sss/plugin/mbedtls/scripts/readme.html">6.2. Introduction on mbedTLS ALT Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../sss/plugin/psa/Readme.html">6.3. Platform Security Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../plugins/akm.html">6.4. Android Key master</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../sss/plugin/open62541/readme.html">6.5. Introduction on Open62541 (OPC UA stack)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../plugins/wifiEAP/wifiEAP.html">6.6. WiFi EAP Demo with Raspberry Pi3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../plugins/pkcs11.html">6.7. PKCS#11 Standalone Library</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../cli-tool.html">7. CLI Tool</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="introduction.html">7.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="block-diagram.html">7.2. Block Diagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pre-steps.html">7.3. Steps needed before running <code class="docutils literal notranslate"><span class="pre">ssscli</span></code> tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running.html">7.4. Running the <code class="docutils literal notranslate"><span class="pre">ssscli</span></code> tool - Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Provisioning/readme.html">7.5. CLI Provisioning</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">7.6. Usage Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli_commands_list.html">7.7. List of <code class="docutils literal notranslate"><span class="pre">ssscli</span></code> commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli_data_format.html">7.8. CLI Data formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../appendix/upload_se05x_using_pycli.html">7.9. Upload keys and certificates to SE05X using Pycli tool</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../a71ch.html">8. A71CH</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../a71ch/a71ch_sss.html">8.1. A71CH and SSS API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../a71ch/a71ch_miscellaneous.html">8.2. Miscellaneous</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../a71ch/a71ch_legacy_host_api.html">8.3. A71CH Legacy API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../a71ch/a71ch_legacy_hlse_api.html">8.4. A71CH Legacy HLSE (Generic) API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../a71ch/a71ch_configure_tool.html">8.5. A71CH Legacy Configure Tool</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix.html">9. Appendix</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../appendix/glossary.html">9.1. Glossary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../appendix/vcom.html">9.2. APDU Commands over VCOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../appendix/vs2019-setup.html">9.3. Visual Studio 2019 Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../appendix/ide_mcux.html">9.4. Setting up MCUXPresso IDE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev-platforms.html">9.5. Development Platforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../appendix/se_uid.html">9.6. How to get SE Platform Information and UID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../appendix/version_info.html">9.7. Version Information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/Certificate_Chains/ROOT/Readme.html">9.8. Certificate Chains : ROOT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../demos/Certificate_Chains/0004_A1F4/Readme.html">9.9. Certificate Chains : DEV Kit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../appendix/rjct_server.html">9.10. JRCP_v1 Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../appendix/platfscp.html">9.11. Using own Platform SCP03 Keys</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../appendix/apdu_write_to_buffer.html">9.12. Write APDU to buffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/api_list.html">9.13. Plug &amp; Trust MW APIs</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">7.6. Usage Examples</a><ul>
+<li><a class="reference internal" href="#se050-vcom-interface">7.6.1. SE050: VCOM Interface</a></li>
+<li><a class="reference internal" href="#se050-pcsc-interface">7.6.2. SE050: PCSC interface</a></li>
+<li><a class="reference internal" href="#se050-jrcpv2-interface">7.6.3. SE050: JRCPV2 interface</a></li>
+<li><a class="reference internal" href="#a71ch-vcom-interface">7.6.4. A71CH: VCOM Interface</a></li>
+<li><a class="reference internal" href="#a71ch-sci2c-interface">7.6.5. A71CH: SCI2C interface</a></li>
+<li><a class="reference internal" href="#mbedtls">7.6.6. MBEDTLS</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+
+
+
+
+
+  <li>
+    <a href="../Provisioning/readme.html" title="Previous Chapter: 7.5. CLI Provisioning"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; 7.5. CLI Provisioning</span>
+    </a>
+  </li>
+  <li>
+    <a href="cli_commands_list.html" title="Next Chapter: 7.7. List of ssscli commands"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">7.7. List of ... &raquo;</span>
+    </a>
+  </li>
+
+
+
+
+
+          </ul>
+
+
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary">
+
+<div class="sidebar-header">
+    <h3>Plug &amp; Trust MW</h3>
+</div>
+
+<div class="row">
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">1. NXP Plug &amp; Trust Middleware</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changes/index.html">2. Changes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../stack/index.html">3. Plug &amp; Trust MW Stack</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../building/index.html">4. Building / Compiling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../demos/index.html">5. Demo and Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plugins/index.html">6. Plugins / Add-ins</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../cli-tool.html">7. CLI Tool</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="introduction.html">7.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="block-diagram.html">7.2. Block Diagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pre-steps.html">7.3. Steps needed before running <code class="docutils literal notranslate"><span class="pre">ssscli</span></code> tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running.html">7.4. Running the <code class="docutils literal notranslate"><span class="pre">ssscli</span></code> tool - Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Provisioning/readme.html">7.5. CLI Provisioning</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">7.6. Usage Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#se050-vcom-interface">7.6.1. SE050: VCOM Interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#se050-pcsc-interface">7.6.2. SE050: PCSC interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#se050-jrcpv2-interface">7.6.3. SE050: JRCPV2 interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#a71ch-vcom-interface">7.6.4. A71CH: VCOM Interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#a71ch-sci2c-interface">7.6.5. A71CH: SCI2C interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mbedtls">7.6.6. MBEDTLS</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cli_commands_list.html">7.7. List of <code class="docutils literal notranslate"><span class="pre">ssscli</span></code> commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli_data_format.html">7.8. CLI Data formats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../appendix/upload_se05x_using_pycli.html">7.9. Upload keys and certificates to SE05X using Pycli tool</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../a71ch.html">8. A71CH</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix.html">9. Appendix</a></li>
+</ul>
+
+</div>
+<div class="row">
+    <form class="form" action="../../search.html" method="get">
+     <div class="form-group">
+      <label for="Search">Search:</label>
+      <input type="text" name="q" class="form-control" placeholder="Search" />
+     </div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+
+  <div class="section" id="usage-examples">
+<h1><span class="section-number">7.6. </span>Usage Examples<a class="headerlink" href="#usage-examples" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="se050-vcom-interface">
+<h2><span class="section-number">7.6.1. </span>SE050: VCOM Interface<a class="headerlink" href="#se050-vcom-interface" title="Permalink to this headline">¶</a></h2>
+<p>Provisioning ECC Pair and Certificate:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 vcom COM5
+ssscli se05x reset
+ssscli <span class="nb">set</span> ecc pair 0x20181001 tstData<span class="se">\t</span>ls_client_key.pem
+ssscli <span class="nb">set</span> cert 0x20181002 tstData<span class="se">\t</span>ls_client.cer
+ssscli disconnect
+</pre></div>
+</div>
+<p>Generating ecc key and retrive public key:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 vcom COM5
+ssscli se05x reset
+ssscli generate ecc 0x20181006 NIST_P256
+ssscli get ecc pair 0x20181006 data<span class="se">\t</span>ls_key.pem
+ssscli disconnect
+</pre></div>
+</div>
+<p>Inject and retrieve certificate:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 vcom COM5
+ssscli <span class="nb">set</span> cert 0x20181004 tstData<span class="se">\t</span>ls_client.cer
+ssscli get cert 0x20181004 data<span class="se">\e</span>xtracted_certificate.cer
+ssscli disconnect
+</pre></div>
+</div>
+<p>Erase key, Inject ecc Key and Sign certificate:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 vcom COM5
+ssscli erase 0x20181001
+ssscli <span class="nb">set</span> ecc pair 0x20181001 tstData<span class="se">\t</span>ls_client_key.pem
+ssscli sign 0x20181001 tstData<span class="se">\t</span>ls_client.cer data<span class="se">\s</span>igned_data.pem
+ssscli disconnect
+</pre></div>
+</div>
+<p>Inject and Retrieve AES key:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 vcom COM5
+ssscli se05x reset
+ssscli <span class="nb">set</span> aes 0x40100000 tstData<span class="se">\a</span>es.der
+ssscli get aes 0x40100000 data<span class="se">\e</span>xtracted_aes_key.cer
+ssscli disconnect
+</pre></div>
+</div>
+<p>Inject ECC Public Key:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 vcom COM5
+ssscli <span class="nb">set</span> ecc pub 0x20181010 tstData<span class="se">\t</span>ls_client_key_pub.pem
+ssscli disconnect
+</pre></div>
+</div>
+<p>Generate RSA Key and Get public key in DER format:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 vcom COM5
+ssscli generate rsa 0x20182001 <span class="m">2048</span>
+ssscli get rsa pub 0x20182001 data<span class="se">\r</span>sa_pub_2048.der --format DER
+ssscli disconnect
+</pre></div>
+</div>
+<p>Generate ecc Koblitz 256 Key, Sign Raw data and verify:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 vcom COM5
+ssscli generate ecc 12E41001 Secp256k1
+ssscli sign 12E41001 <span class="s2">&quot;Hello World&quot;</span> signed_data_ecc_secp256k1.pem
+ssscli verify 12E41001 <span class="s2">&quot;Hello World&quot;</span> signed_data_ecc_secp256k1.pem
+ssscli disconnect
+</pre></div>
+</div>
+<p>Generate ecc Brainpool192 Key and Sign and verify certificate using SHA512 has algorithm:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 vcom COM5
+ssscli generate ecc 0x2E101501 Brainpool192
+ssscli sign 0x2E101501 tstData<span class="se">\t</span>ls_client.cer data<span class="se">\s</span>igned_data.pem --hashalgo<span class="o">=</span>SHA512
+ssscli verify 0x2E101501 tstData<span class="se">\t</span>ls_client.cer data<span class="se">\s</span>igned_data.pem --hashalgo<span class="o">=</span>SHA512
+ssscli disconnect
+</pre></div>
+</div>
+<p>Read Cert UID of 10 bytes long:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 vcom COM5
+ssscli se05x certuid
+</pre></div>
+</div>
+<p>Read UID of 18 bytes long:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 vcom COM5
+ssscli se05x uid
+</pre></div>
+</div>
+<p>Session open with auth type as Platform SCP, generate ecc Brainpool192 Key:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 vcom COM5 --auth_type PlatformSCP
+ssscli se05x reset
+ssscli generate ecc 2E10D532 Brainpool192
+ssscli disconnect
+</pre></div>
+</div>
+<p>Generate ecc Koblitz256 key and create reference key:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 vcom COM5
+ssscli generate ecc 7A10D838 Secp256k1
+ssscli refpem ecc pair 7A10D838 data<span class="se">\r</span>efkey_secp256k1.pem
+ssscli disconnect
+</pre></div>
+</div>
+<p>Generate rsa 4096 key and create reference key in pkcs12 format:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 vcom COM5
+ssscli generate rsa 0x70102040 <span class="m">4096</span>
+ssscli refpem rsa pair 0x70102040 rsa_4096_rekey.pfx --password nxp
+ssscli disconnect
+</pre></div>
+</div>
+<p>Generate ecc Brainpool 256 key and create pkcs12 format reference key extracted to pem format:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 vcom COM5
+ssscli generate ecc <span class="m">70102050</span> Brainpool256
+ssscli refpem ecc pair <span class="m">70102050</span> ecc_bp256_rekey.pem  --format PKCS12 --password nxp
+ssscli disconnect
+</pre></div>
+</div>
+<p>Generate ecc ED25519 key and sign certificate:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 vcom COM5
+ssscli generate ecc <span class="m">70102060</span> ED25519
+ssscli sign <span class="m">70102060</span> tstData<span class="se">\t</span>ls_client.cer data<span class="se">\s</span>igned_data_using_ed25519.pem
+ssscli disconnect
+</pre></div>
+</div>
+<p>Generate ecc MONTH DH 25519 key:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 vcom COM5
+ssscli generate ecc <span class="m">70102080</span> ED25519
+ssscli sign <span class="m">70102080</span> tstData<span class="se">\t</span>ls_client.cer data<span class="se">\s</span>igned_data_using_ed25519.pem
+ssscli disconnect
+</pre></div>
+</div>
+<p>Perform Encrypt and Decrypt using RSA 2048:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 vcom COM5
+ssscli generate rsa 0x20182001 <span class="m">2048</span>
+ssscli get rsa pub 0x20182001 rsa_pub_2048.pem
+ssscli <span class="nb">set</span> rsa pub 0x20184120 rsa_pub_2048.pem
+ssscli encrypt 0x20184120 <span class="s2">&quot;Welcome to NXP&quot;</span> rsa_2048_encrypted_data.pem
+ssscli decrypt 0x20182001 rsa_2048_encrypted_data.pem decrypted_data.txt
+ssscli disconnect
+</pre></div>
+</div>
+</div>
+<div class="section" id="se050-pcsc-interface">
+<h2><span class="section-number">7.6.2. </span>SE050: PCSC interface<a class="headerlink" href="#se050-pcsc-interface" title="Permalink to this headline">¶</a></h2>
+<p>Provisioning ECC Pair and Certificate:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 pcsc NXP
+ssscli se05x reset
+ssscli <span class="nb">set</span> ecc pair 0x20181001 tstData<span class="se">\t</span>ls_client_key.pem
+ssscli <span class="nb">set</span> cert 0x20181002 tstData<span class="se">\t</span>ls_client.cer
+ssscli disconnect
+</pre></div>
+</div>
+<p>Inject ECC Public Key:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 pcsc NXP
+ssscli <span class="nb">set</span> ecc pub 0x20181010 tstData<span class="se">\t</span>ls_client_key_pub.pem
+ssscli disconnect
+</pre></div>
+</div>
+</div>
+<div class="section" id="se050-jrcpv2-interface">
+<h2><span class="section-number">7.6.3. </span>SE050: JRCPV2 interface<a class="headerlink" href="#se050-jrcpv2-interface" title="Permalink to this headline">¶</a></h2>
+<p>Provisioning ECC Pair and Certificate:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 jrcpv2 <span class="m">127</span>.0.0.1:8050
+ssscli se05x reset
+ssscli <span class="nb">set</span> ecc pair 0x20181001 tstData<span class="se">\t</span>ls_client_key.pem
+ssscli <span class="nb">set</span> cert 0x20181002 tstData<span class="se">\t</span>ls_client.cer
+ssscli disconnect
+</pre></div>
+</div>
+<p>Generating ecc key and retrive public key:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 jrcpv2 <span class="m">127</span>.0.0.1:8050
+ssscli se05x reset
+ssscli generate ecc 0x40100000 NIST_P256
+ssscli get ecc pair 0x40100000 data<span class="se">\t</span>ls_key.pem
+ssscli disconnect
+</pre></div>
+</div>
+<p>Set and retrieve certificate:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 jrcpv2 <span class="m">127</span>.0.0.1:8050
+ssscli <span class="nb">set</span> cert 0x20181002 tstData<span class="se">\t</span>ls_client.cer
+ssscli get cert 0x20181002 data<span class="se">\e</span>xtracted_certificate.cer
+ssscli disconnect
+</pre></div>
+</div>
+<p>Erase a key, Inject ecc Key and Sign certificate:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 jrcpv2 <span class="m">127</span>.0.0.1:8050
+ssscli erase 0x20181001
+ssscli <span class="nb">set</span> ecc pair 0x20181001 tstData<span class="se">\t</span>ls_client_key.pem
+ssscli sign 0x20181001 tstData<span class="se">\t</span>ls_client.cer data<span class="se">\s</span>igned_data.pem
+ssscli disconnect
+</pre></div>
+</div>
+<p>Inject and Retrieve AES key:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 jrcpv2 <span class="m">127</span>.0.0.1:8050
+ssscli se05x reset
+ssscli <span class="nb">set</span> aes 0x40200000 tstData<span class="se">\a</span>es.der
+ssscli get aes 0x40200000 data<span class="se">\e</span>xtracted_aes_key.cer
+ssscli disconnect
+</pre></div>
+</div>
+<p>Inject ECC Public Key:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 jrcpv2 <span class="m">127</span>.0.0.1:8050
+ssscli <span class="nb">set</span> ecc pub 0x20181010 tstData<span class="se">\t</span>ls_client_key_pub.pem
+ssscli disconnect
+</pre></div>
+</div>
+<p>Generate RSA Key and Get public key in PEM format:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 jrcpv2 <span class="m">127</span>.0.0.1:8050
+ssscli generate rsa 0x20182001 <span class="m">2048</span>
+ssscli get rsa pub 0x20182001 data<span class="se">\r</span>sa_pub_2048.pem --format PEM
+ssscli disconnect
+</pre></div>
+</div>
+<p>Generate ecc Koblitz 256 Key, Sign Raw data and verify:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 jrcpv2 <span class="m">127</span>.0.0.1:8050
+ssscli generate ecc 12E41001 Secp256k1
+ssscli sign 12E41001 <span class="s2">&quot;Hello World&quot;</span> signed_data_ecc_secp256k1.pem
+ssscli verify 12E41001 <span class="s2">&quot;Hello World&quot;</span> signed_data_ecc_secp256k1.pem
+ssscli disconnect
+</pre></div>
+</div>
+<p>Generate ecc Brainpool192 Key and Sign and verify certificate using SHA512 has algorithm:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 jrcpv2 <span class="m">127</span>.0.0.1:8050
+ssscli generate ecc 0x2E101501 Brainpool192
+ssscli sign 0x2E101501 tstData<span class="se">\t</span>ls_client.cer data<span class="se">\s</span>igned_data.pem --hashalgo<span class="o">=</span>SHA512
+ssscli verify 0x2E101501 tstData<span class="se">\t</span>ls_client.cer data<span class="se">\s</span>igned_data.pem --hashalgo<span class="o">=</span>SHA512
+ssscli disconnect
+</pre></div>
+</div>
+<p>Read Cert UID of 10 bytes long:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 jrcpv2 <span class="m">127</span>.0.0.1:8050
+ssscli se05x certuid
+</pre></div>
+</div>
+<p>Read UID of 18 bytes long:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 jrcpv2 <span class="m">127</span>.0.0.1:8050
+ssscli se05x uid
+</pre></div>
+</div>
+<p>Session open with auth type as Platform SCP, generate ecc Brainpool192 Key:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 jrcpv2 <span class="m">127</span>.0.0.1:8050 --auth_type PlatformSCP
+ssscli se05x reset
+ssscli generate ecc 2E10D532 Brainpool192
+ssscli disconnect
+</pre></div>
+</div>
+<p>Generate ecc Koblitz256 key and create reference key:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 jrcpv2 <span class="m">127</span>.0.0.1:8050
+ssscli generate ecc 7A10D838 Secp256k1
+ssscli refpem ecc pair 7A10D838 data<span class="se">\r</span>efkey_secp256k1.pem
+ssscli disconnect
+</pre></div>
+</div>
+<p>Generate rsa 4096 key and create reference key in pkcs12 format:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 jrcpv2 <span class="m">127</span>.0.0.1:8050
+ssscli generate rsa 0x70102040 <span class="m">4096</span>
+ssscli refpem rsa pair 0x70102040 rsa_4096_rekey.pfx --password nxp
+ssscli disconnect
+</pre></div>
+</div>
+<p>Generate ecc Brainpool 256 key and create pkcs12 format reference key extracted to pem format:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 jrcpv2 <span class="m">127</span>.0.0.1:8050
+ssscli generate ecc <span class="m">70102050</span> Brainpool256
+ssscli refpem ecc pair <span class="m">70102050</span> ecc_bp256_rekey.pem  --format PKCS12 --password nxp
+ssscli disconnect
+</pre></div>
+</div>
+<p>Generate ecc ED25519 key and sign certificate:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 jrcpv2 <span class="m">127</span>.0.0.1:8050
+ssscli generate ecc <span class="m">70102060</span> ED25519
+ssscli sign <span class="m">70102060</span> tstData<span class="se">\t</span>ls_client.cer data<span class="se">\s</span>igned_data_using_ed25519.pem
+ssscli disconnect
+</pre></div>
+</div>
+<p>Generate ecc MONTH DH 25519 key:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 jrcpv2 <span class="m">127</span>.0.0.1:8050
+ssscli generate ecc <span class="m">70102080</span> ED25519
+ssscli sign <span class="m">70102080</span> tstData<span class="se">\t</span>ls_client.cer data<span class="se">\s</span>igned_data_using_ed25519.pem
+ssscli disconnect
+</pre></div>
+</div>
+<p>Perform Encrypt and Decrypt using RSA 2048:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect se050 jrcpv2 <span class="m">127</span>.0.0.1:8050
+ssscli generate rsa 0x20182001 <span class="m">2048</span>
+ssscli get rsa pub 0x20182001 rsa_pub_2048.pem
+ssscli <span class="nb">set</span> rsa pub 0x20184120 rsa_pub_2048.pem
+ssscli encrypt 0x20184120 <span class="s2">&quot;Welcome to NXP&quot;</span> rsa_2048_encrypted_data.pem
+ssscli decrypt 0x20182001 rsa_2048_encrypted_data.pem decrypted_data.txt
+ssscli disconnect
+</pre></div>
+</div>
+</div>
+<div class="section" id="a71ch-vcom-interface">
+<h2><span class="section-number">7.6.4. </span>A71CH: VCOM Interface<a class="headerlink" href="#a71ch-vcom-interface" title="Permalink to this headline">¶</a></h2>
+<p>Provisioning ECC Pair and Certificate:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect a71ch vcom COM7
+ssscli a71ch reset
+ssscli <span class="nb">set</span> ecc pair 0x20181003 tstData<span class="se">\t</span>ls_client_key.pem
+ssscli <span class="nb">set</span> cert 0x20181004 tstData<span class="se">\t</span>ls_client.cer
+ssscli disconnect
+</pre></div>
+</div>
+<p>Generating ecc key and retrive public key:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect a71ch vcom COM7
+ssscli a71ch reset
+ssscli generate ecc 0x20181003 NIST_P256
+ssscli get ecc pair 0x20181003 data<span class="se">\t</span>ls_key.pem
+ssscli disconnect
+</pre></div>
+</div>
+<p>Set certificate and retrieve certificate:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect a71ch vcom COM7
+ssscli <span class="nb">set</span> cert 0x20181004 tstData<span class="se">\t</span>ls_client.cer
+ssscli get cert 0x20181004 data<span class="se">\e</span>xtracted_certificate.cer
+ssscli disconnect
+</pre></div>
+</div>
+<p>Erase a key, Inject ecc Key and Sign certificate:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect a71ch vcom COM7
+ssscli erase 0x20181005
+ssscli <span class="nb">set</span> ecc pair 0x20181005 tstData<span class="se">\t</span>ls_client_key.pem
+ssscli sign 0x20181005 tstData<span class="se">\t</span>ls_client.cer data<span class="se">\s</span>igned_data.pem
+ssscli disconnect
+</pre></div>
+</div>
+</div>
+<div class="section" id="a71ch-sci2c-interface">
+<h2><span class="section-number">7.6.5. </span>A71CH: SCI2C interface<a class="headerlink" href="#a71ch-sci2c-interface" title="Permalink to this headline">¶</a></h2>
+<p>Provisioning ECC Pair and Certificate:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect a71ch sci2c none
+ssscli a71ch reset
+ssscli <span class="nb">set</span> ecc pair 0x20181005 tstData/tls_client_key.pem
+ssscli <span class="nb">set</span> cert 0x20181002 tstData/tls_client.cer
+ssscli disconnect
+</pre></div>
+</div>
+<p>Generating ecc key and retrive public key:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect a71ch sci2c none
+ssscli a71ch reset
+ssscli generate ecc 0x40100000 NIST_P256
+ssscli get ecc pair 0x40100000 data/tls_key.pem
+ssscli disconnect
+</pre></div>
+</div>
+<p>Set certificate and retrieve certificate:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect a71ch sci2c none
+ssscli <span class="nb">set</span> cert 0x20181002 tstData/tls_client.cer
+ssscli get cert 0x20181002 data/extracted_certificate.cer
+ssscli disconnect
+</pre></div>
+</div>
+<p>Erase a key, Inject ecc Key and Sign certificate:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect a71ch sci2c none
+ssscli erase 0x20181001
+ssscli <span class="nb">set</span> ecc pair 0x20181001 tstData/tls_client_key.pem
+ssscli sign 0x20181001 tstData/tls_client.cer data/signed_data.pem
+ssscli disconnect
+</pre></div>
+</div>
+</div>
+<div class="section" id="mbedtls">
+<h2><span class="section-number">7.6.6. </span>MBEDTLS<a class="headerlink" href="#mbedtls" title="Permalink to this headline">¶</a></h2>
+<p>Provisioning ECC Pair and Certificate:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect mbedtls none data
+ssscli <span class="nb">set</span> ecc pair 0x20181005 tstData<span class="se">\t</span>ls_client_key.pem
+ssscli <span class="nb">set</span> cert 0x20181002 tstData<span class="se">\t</span>ls_client.cer
+ssscli disconnect
+</pre></div>
+</div>
+<p>Generating ecc key and retrive public key:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect mbedtls none data
+ssscli generate ecc 0x20181003 NIST_P256
+ssscli get ecc pair 0x20181003 data<span class="se">\t</span>ls_key.pem
+ssscli disconnect
+</pre></div>
+</div>
+<p>Set certificate and retrieve certificate:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect mbedtls none data
+ssscli <span class="nb">set</span> cert 0x20181004 tstData<span class="se">\t</span>ls_client.cer
+ssscli get cert 0x20181004 data<span class="se">\e</span>xtracted_certificate.cer
+ssscli disconnect
+</pre></div>
+</div>
+<p>Erase key, provisioning ecc Key and Sign certificate:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssscli connect mbedtls none data
+ssscli erase 0x20181005
+ssscli <span class="nb">set</span> ecc pair 0x20181005 tstData<span class="se">\t</span>ls_client_key.pem
+ssscli sign 0x20181005 tstData<span class="se">\t</span>ls_client.cer data<span class="se">\s</span>igned_data.pem
+ssscli disconnect
+</pre></div>
+</div>
+</div>
+</div>
+
+
+    </div>
+
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+
+    </p>
+    <p>
+        &copy; Copyright 2018-2019, NXP.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

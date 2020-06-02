@@ -1,0 +1,60 @@
+App   :INFO :PlugAndTrust_v02.13.00_20200208
+App   :INFO :Running ..\..\..\simw-top_build\se_x86\bin\Debug\se05x_Get_Info.exe
+App   :INFO :Using PortName='127.0.0.1:8050' (gszSocketPortDefault)
+App   :INFO :If you want to over-ride the selection, use ENV=EX_SSS_BOOT_SSS_PORT or pass in command line arguments.
+smCom :INFO :Opening connection to JRCP server on 127.0.0.1:8050
+sss   :INFO :atr (Len=0)
+sss   :WARN :Communication channel is Plain.
+sss   :WARN :!!!Not recommended for production use.!!!
+App   :WARN :#####################################################
+App   :INFO :uid (Len=18)
+      04 0D 0F 00    39 67 C2 C1    CE 41 1B 9A    76 F5 B7 AB
+      D0 CD
+App   :WARN :#####################################################
+App   :INFO :Applet Major = 3
+App   :INFO :Applet Minor = 1
+App   :INFO :Applet patch = 1
+App   :INFO :AppletConfig = 6FFF
+App   :INFO :With    ECDAA
+App   :INFO :With    ECDSA_ECDH_ECDHE
+App   :INFO :With    EDDSA
+App   :INFO :With    DH_MONT
+App   :INFO :With    HMAC
+App   :INFO :With    RSA_PLAIN
+App   :INFO :With    RSA_CRT
+App   :INFO :With    AES
+App   :INFO :With    DES
+App   :INFO :With    PBKDF
+App   :INFO :With    TLS
+App   :INFO :With    MIFARE
+App   :INFO :With    I2CM
+App   :INFO :Internal = 010B
+App   :WARN :#####################################################
+App   :INFO :Tag value - proprietary data 0xFE = 0xFE
+App   :INFO :Length of following data 0x45 = 0x45
+App   :INFO :Tag card identification data (Len=2)
+      DF 28
+App   :INFO :Length of card identification data = 0x42
+App   :INFO :Tag configuration ID (Must be 0x01) = 0x01
+App   :INFO :Configuration ID (Len=12)
+      00 05 A2 00    F0 A4 91 BD    4B D8 24 3A
+App   :INFO :OEF ID (Len=2)
+      A2 00
+App   :INFO :Tag patch ID (Must be 0x02) = 0x02
+App   :INFO :Patch ID (Len=8)
+      00 00 00 00    00 00 00 00
+App   :INFO :Tag platform build ID1 (Must be 0x03) = 0x03
+App   :INFO :Platform build ID (Len=24)
+      4A 33 52 33    35 31 30 32    31 45 45 45    30 34 30 30
+      30 30 30 30    30 30 30 30
+App   :INFO :JCOP Platform ID = J3R351021EEE0400
+App   :INFO :Tag FIPS mode (Must be 0x05) = 0x05
+App   :INFO :FIPS mode var = 0x00
+App   :INFO :Tag pre-perso state (Must be 0x07) = 0x07
+App   :INFO :Bit mask of pre-perso state var = 0x00
+App   :INFO :Tag ROM ID (Must be 0x08) = 0x08
+App   :INFO :ROM ID (Len=8)
+      52 4F 4D 5F    5F 5F 49 44
+App   :INFO :Status Word (SW) (Len=2)
+      90 00
+App   :INFO :ex_sss Finished

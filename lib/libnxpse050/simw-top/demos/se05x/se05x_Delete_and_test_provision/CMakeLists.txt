@@ -1,0 +1,58 @@
+# Copyright 2019,2020 NXP
+#
+# This software is owned or controlled by NXP and may only be used
+# strictly in accordance with the applicable license terms.  By expressly
+# accepting such terms or by downloading, installing, activating and/or
+# otherwise using the software, you are agreeing that you have read, and
+# that you agree to comply with and are bound by, such license terms.  If
+# you do not agree to be bound by the applicable license terms, then you
+# may not retain, install, activate or otherwise use the software.
+#
+
+PROJECT(se05x_Delete_and_test_provision)
+
+FILE(
+    GLOB
+    files
+    *.c
+)
+
+ADD_EXECUTABLE(${PROJECT_NAME} ${KSDK_STARTUP_FILE} ${files})
+
+TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/sss/ex/inc)
+
+TARGET_LINK_LIBRARIES(
+    ${PROJECT_NAME}
+    ex_common
+    SSS_APIs
+)
+
+CREATE_BINARY(${PROJECT_NAME})
+
+IF(
+    CMAKE_BUILD_TYPE
+    STREQUAL
+    "Release"
+)
+    COPY_TO_SOURCEDIR(
+        ${PROJECT_NAME}
+        binaries/tst
+        ${SMCOM}-${SE05X_Auth}
+    )
+ENDIF()
+
+IF(
+    "${CMAKE_CXX_COMPILER_ID}"
+    MATCHES
+    "MSVC"
+)
+    # 1900 matches VS2015
+    IF(
+        ${MSVC_VERSION}
+        LESS_EQUAL
+        1900
+    )
+        TARGET_COMPILE_OPTIONS(${PROJECT_NAME} PUBLIC /wd4127 # conditional expression is constant
+        )
+    ENDIF()
+ENDIF()

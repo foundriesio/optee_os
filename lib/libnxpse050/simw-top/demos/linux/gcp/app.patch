@@ -1,0 +1,20 @@
+diff --git a/iot/mqtt-ciotc/mqtt_ciotc.c b/iot/mqtt-ciotc/mqtt_ciotc.c
+index 3b85866..b54c7b4 100644
+--- a/iot/mqtt-ciotc/mqtt_ciotc.c
++++ b/iot/mqtt-ciotc/mqtt_ciotc.c
+@@ -25,6 +25,7 @@
+ #include "jwt.h"
+ #include "openssl/ec.h"
+ #include "openssl/evp.h"
++#include "openssl/conf.h"
+ // [END iot_mqtt_include]
+
+ #define TRACE 1 /* Set to 1 to enable tracing */
+@@ -345,6 +346,7 @@ int Publish(char* payload, int payload_size) {
+  */
+ // [START iot_mqtt_run]
+ int main(int argc, char* argv[]) {
++  OPENSSL_config(NULL);
+   OpenSSL_add_all_algorithms();
+   OpenSSL_add_all_digests();
+   OpenSSL_add_all_ciphers();

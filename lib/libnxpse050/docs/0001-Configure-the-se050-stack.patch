@@ -1,0 +1,64 @@
+From 7582cd93c5e79627d77bbf6bf93aa7955614fdc6 Mon Sep 17 00:00:00 2001
+From: Jorge Ramirez-Ortiz <jorge@foundries.io>
+Date: Tue, 2 Jun 2020 14:29:23 +0200
+Subject: [PATCH] Configure the se050 stack
+
+---
+ sss/inc/fsl_sss_ftr_default.h | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/sss/inc/fsl_sss_ftr_default.h b/sss/inc/fsl_sss_ftr_default.h
+index a02ca38..f1917a4 100644
+--- a/sss/inc/fsl_sss_ftr_default.h
++++ b/sss/inc/fsl_sss_ftr_default.h
+@@ -129,7 +129,7 @@
+  */
+ 
+ /** Use mbedTLS as host crypto */
+-#define SSS_HAVE_HOSTCRYPTO_MBEDTLS 1
++#define SSS_HAVE_HOSTCRYPTO_MBEDTLS 0
+ 
+ /** Use mbed-crypto as host crypto
+  * Required for ARM-PSA / TF-M
+@@ -147,7 +147,7 @@
+  * This then becomes integration without mbedTLS/OpenSSL for SCP03 / AESKey.
+  *
+  * .. note:: ECKey abstraction is not implemented/available yet. */
+-#define SSS_HAVE_HOSTCRYPTO_USER 0
++#define SSS_HAVE_HOSTCRYPTO_USER 1
+ 
+ /** NO Host Crypto
+  * Note, this is unsecure and only provided for experimentation
+@@ -220,10 +220,10 @@
+  */
+ 
+ /**  */
+-#define SSS_HAVE_SCP_NONE 0
++#define SSS_HAVE_SCP_NONE 1
+ 
+ /** Use SSS Layer for SCP.  Used for SE050 family. */
+-#define SSS_HAVE_SCP_SCP03_SSS 1
++#define SSS_HAVE_SCP_SCP03_SSS 0
+ 
+ /** Use Host Crypto Layer for SCP03. Legacy implementation. Used for older demos of A71CH Family. */
+ #define SSS_HAVE_SCP_SCP03_HOSTCRYPTO 0
+@@ -295,14 +295,14 @@
+ #define SSSFTR_SE05X_KEY_GET 1
+ 
+ /** SE05X Secure Element : Authenticate via ECKey */
+-#define SSSFTR_SE05X_AuthECKey 1
++#define SSSFTR_SE05X_AuthECKey 0
+ 
+ /** SE05X Secure Element : Allow creation of user/authenticated session.
+  *
+  * If the intended deployment only uses Platform SCP
+  * Or it is a pure session less integration, this can
+  * save some code size. */
+-#define SSSFTR_SE05X_AuthSession 1
++#define SSSFTR_SE05X_AuthSession 0
+ 
+ /** SE05X Secure Element : Allow creation/deletion of Crypto Objects
+  *
+-- 
+2.17.1
+

@@ -28,6 +28,7 @@ incdirs-y += ../simw-top/sss/port/default/
 srcs-y += a_trace.c
 srcs-y += mocks.c
 srcs-y += apis.c
+srcs-y += info.c
 srcs-y += i2c.c
 
 # hostlib/hostLib/libCommon/smCom/

@@ -22,6 +22,9 @@ sss_status_t se050_kestore_and_object_init(sss_se05x_ctx_t *pCtx);
 sss_status_t se050_factory_reset(sss_se05x_ctx_t *pCtx);
 sss_status_t se050_session_open(sss_se05x_ctx_t *pCtx);
 
+/* requires a context restart */
+void se050_display_board_info(sss_se05x_session_t *session);
+
 uint8_t se050_key_exists(uint32_t keyId, pSe05xSession_t session_ctx);
 sss_status_t se050_get_freemem(pSe05xSession_t session_ctx,
 			       uint16_t *t, uint16_t *p);

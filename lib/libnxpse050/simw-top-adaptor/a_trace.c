@@ -54,12 +54,11 @@ void hex_dump(const char *function, int line, int level, const void *buf,
 		sbuf.ptr = NULL;
 		for (i = 0; i < len; i++) {
 			if ((i % 16) == 0) {
-				ok = append(&sbuf, "%0*" PRIxVA "  ",
-					    PRIxVA_WIDTH, (vaddr_t)(in + i));
+				ok = append(&sbuf, "\t");
 				if (!ok)
 					goto err;
 			}
-			ok = append(&sbuf, "%02x ", in[i]);
+			ok = append(&sbuf, "%02x", in[i]);
 			if (!ok)
 				goto err;
 			if ((i % 16) == 7) {
@@ -70,6 +69,12 @@ void hex_dump(const char *function, int line, int level, const void *buf,
 				trace_printf(function, line, level, true, "%s",
 					     sbuf.buf);
 				sbuf.ptr = NULL;
+			} else {
+				if (i + 1 < len) {
+					ok = append(&sbuf, ".");
+					if (!ok)
+						goto err;
+				}
 			}
 		}
 		if (sbuf.ptr) {

@@ -13,22 +13,10 @@ Stack Documentation and original code:
 
 Port Caveats:
 =============
-1. Platform Secure Channel Protocol not enabled (i2c communication not secured)
-  If secret keys are going to be transferred to the device, it must be enabled.
-  -- Import ExternaObject not checked --
-  
-2. One single global session and One single global key store.
-
-3. No support for OP-TEE  multisession/multithread
-
-4. No authentication (single tenant use case): authentication on the
-  communication channel is not enabled, ie, default we use the default
-  session login when connecting to the Applet (we are reading in the
-  secured world domain so not an issue).
-
-5. Policies to control the Secure Objects are not enabled.
-
-6. Transport lock?
+1. One single global session and One single global key store.
+2. No support for OP-TEE  multisession/multithread
+3. Policies to control the Secure Objects are not enabled.
+4. Transport lock?
 
 - Two persistent Secure Object types (deletion controlled by SKS only)
     RSA
@@ -43,16 +31,16 @@ Port Caveats:
 - Communication with SE050 over I2C and two distinct drivers
     * mxc_i2c: op-tee native. hardcoded to work on a 25MHZ clock and I2C3
     * tee-i2c: trampoline that calls linux to access I2C3
-               requires kernel patch [1]
+               requires kernel patch.
 
     The SE050 stack starts using the mxc_i2c required to access hmac
     and then transitions to tee-i2c as soon as the normal world is
     booted so the SE050 can be used with pcks-11 without bus
     collisions
 
-The SE050 context for op-tee is instantiated on the first operation
-that requires it access (check context.c:se050_ready)
-
+    All communication between the host and the SE050 are encrypted
+    using the default keys in the SE050.
+    
 The SE050 can support one-shot crypto operations (something that
 op-tee does not yet). The SE050 interface for those is not used.
 
@@ -102,8 +90,31 @@ Note
 To help with a visual understanding and navegation of op-tee please
 have a look at the diagrams/ folder
 
+CONFIGS:
+=======
 
-[1] https://github.com/ldts/linux/commit/f22281f2294d8af0bc08342062ab8b2963a6e6fe
-[2] https://github.com/ldts/optee_test/commits/se050
+CFG_CORE_SE05X_I2C_BUS: I2C bus
+            __CFG
+    I2C1     0
+    I2C2     1
+    I2C3     2
 
+CFG_CORE_SE05X_DISPLAY_INFO: displays the SE050 Applet and JCOP4
+ information (shows the OEFID required to know the default keys to use
+ in SCP03). Doing this requires that we reinitialize the context.
 
+  0: does not display
+  1: displays
+
+CFG_CORE_SE05X_OEFID: the OEFID determins the keys to use when
+  stablishing communications with the SE050. Once we know the OEFID, we
+  no longer need to display the information and we can simply provide
+  this config.
+                           __CFG                              
+    SE050A1_ID 0xA204        0  
+    SE050A2_ID 0xA205        1
+    SE050B1_ID 0xA202        2
+    SE050B2_ID 0xA203        3
+    SE050C1_ID 0xA200        4 
+    SE050C2_ID 0xA201        5
+    SE050DV_ID 0xA1F4        6

@@ -5,7 +5,6 @@
  */
 
 #include <fsl_sss_api.h>
-#include <kernel/delay.h>
 
 void nLog(const char *comp, int level, const char *format, ...)
 {
@@ -81,11 +80,4 @@ sss_status_t sss_rng_get_random(sss_rng_context_t *context,
 int sscanf(const char *str, const char *format, ...)
 {
 	return -1;
-}
-
-sss_status_t sm_sleep(uint32_t ms)
-{
-	mdelay(ms);
-
-	return kStatus_SSS_Success;
 }

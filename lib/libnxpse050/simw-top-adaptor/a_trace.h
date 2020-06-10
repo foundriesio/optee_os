@@ -45,6 +45,7 @@
 #define LOG_MAU8_E(...) ((void)0)
 #define LOG_AU8_D(...) ((void)0)
 #define LOG_AU8_E(...) ((void)0)
+#define LOG_U32_D(x) ((void)0)
 
 void hex_dump(const char *function __unused, int line __unused,
 	      int level __unused,

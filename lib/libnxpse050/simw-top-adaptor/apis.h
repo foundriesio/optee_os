@@ -29,7 +29,7 @@ typedef struct {
 
 sss_status_t se050_kestore_and_object_init(sss_se05x_ctx_t *pCtx);
 sss_status_t se050_factory_reset(sss_se05x_ctx_t *pCtx);
-sss_status_t se050_session_open(sss_se05x_ctx_t *pCtx);
+sss_status_t se050_session_open(sss_se05x_ctx_t *pCtx, bool encryption);
 sss_status_t se050_configure_host(sss_session_t *host_session,
 				  sss_key_store_t *host_ks,
 				  SE_Connect_Ctx_t *se05x_open_ctx,

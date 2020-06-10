@@ -749,7 +749,7 @@ exit:
  *
  * @return sss_status_t
  */
-sss_status_t se050_session_open(sss_se05x_ctx_t *pCtx)
+sss_status_t se050_session_open(sss_se05x_ctx_t *pCtx, bool encryption)
 {
 	SE_Connect_Ctx_t *pConnectCtx = &pCtx->se05x_open_ctx;
 	sss_se05x_session_t *pSession = &pCtx->session;
@@ -757,6 +757,10 @@ sss_status_t se050_session_open(sss_se05x_ctx_t *pCtx)
 
 	pConnectCtx->connType = kType_SE_Conn_Type_T1oI2C;
 	pConnectCtx->portName = NULL;
+
+	if (!encryption)
+		return sss_se05x_session_open(pSession, kType_SSS_SE_SE05x, 0,
+				      kSSS_ConnectionType_Plain, pConnectCtx);
 
 	status = se050_configure_host(&pCtx->host_session,
 				      &pCtx->host_ks,

@@ -2,6 +2,10 @@
 /*
  * Copyright (C) Foundries Ltd. 2020 - All Rights Reserved
  * Author: Jorge Ramirez <jorge@foundries.io>
+ *
+ * Configuration file for the SDK/Middleware (enables/disable Middleware
+ * features)
+ *
  */
 
 #ifndef SSS_APIS_INC_FSL_SSS_FTR_H_
@@ -115,8 +119,8 @@
 #error "Enable at-least one of 'mbedTLS_ALT'"
 #endif
 
-#define SSS_HAVE_SCP_NONE 1
-#define SSS_HAVE_SCP_SCP03_SSS 0
+#define SSS_HAVE_SCP_NONE 0
+#define SSS_HAVE_SCP_SCP03_SSS 1
 #define SSS_HAVE_SCP_SCP03_HOSTCRYPTO 0
 
 #if ((0					\

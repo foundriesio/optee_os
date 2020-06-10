@@ -21,6 +21,7 @@ incdirs-y += ../simw-top/hostlib/hostLib/se05x_03_xx_xx/
 incdirs-y += ../simw-top/sss/inc/
 incdirs-y += ../simw-top/sss/ex/inc/
 incdirs-y += ../simw-top/sss/port/default/
+incdirs-y += ../simw-top/sss/src/user/crypto/
 
 # ============ #
 # SE050 stack  #
@@ -31,6 +32,7 @@ srcs-y += fakes.c
 srcs-y += apis.c
 srcs-y += info.c
 srcs-y += i2c.c
+srcs-y += host.c
 
 # hostlib/hostLib/libCommon/smCom/
 srcs-y += ../simw-top/hostlib/hostLib/libCommon/smCom/smComT1oI2C.c
@@ -48,6 +50,9 @@ srcs-y += ../simw-top/hostlib/hostLib/libCommon/infra/global_platf.c
 # hostlib/hostLib/libCommon/scp/
 srcs-y += ../simw-top/hostlib/hostLib/libCommon/scp/scp.c
 
+# hostlib/hostLib/libCommon/nxScp/
+srcs-y += ../simw-top/hostlib/hostLib/libCommon/nxScp/nxScp03_Com.c
+
 # hostlib/hostLib/se05x_03_xx_xx/
 srcs-y += ../simw-top/hostlib/hostLib/se05x_03_xx_xx/se05x_APDU.c
 
@@ -64,3 +69,10 @@ srcs-y += ../simw-top/sss/src/fsl_sss_util_asn1_der.c
 srcs-y += ../simw-top/sss/src/se05x/fsl_sss_se05x_policy.c
 srcs-y += ../simw-top/sss/src/se05x/fsl_sss_se05x_mw.c
 srcs-y += ../simw-top/sss/src/se05x/fsl_sss_se05x_apis.c
+srcs-y += ../simw-top/sss/src/se05x/fsl_sss_se05x_scp03.c
+
+# sss/src/user/
+srcs-y += ../simw-top/sss/src/user/fsl_sss_user_impl.c
+srcs-y += ../simw-top/sss/src/user/crypto/aes.c
+srcs-y += ../simw-top/sss/src/user/crypto/aes_cmac.c
+srcs-y += ../simw-top/sss/src/user/crypto/aes_cmac_multistep.c

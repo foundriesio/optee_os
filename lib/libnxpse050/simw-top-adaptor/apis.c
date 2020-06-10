@@ -756,16 +756,19 @@ sss_status_t se050_session_open(sss_se05x_ctx_t *pCtx)
 	sss_status_t status = kStatus_SSS_Fail;
 
 	pConnectCtx->connType = kType_SE_Conn_Type_T1oI2C;
-	pConnectCtx->auth.authType = kSSS_AuthType_None;
 	pConnectCtx->portName = NULL;
 
-	status = sss_se05x_session_open(pSession, kType_SSS_SE_SE05x,
-					0, kSSS_ConnectionType_Plain,
-					pConnectCtx);
-	if (kStatus_SSS_Success != status)
-		EMSG("sss_session_open failed");
+	status = se050_configure_host(&pCtx->host_session,
+				      &pCtx->host_ks,
+				      &pCtx->se05x_open_ctx,
+				      &pCtx->se05x_auth,
+				      kSSS_AuthType_SCP03);
+	if (status != kStatus_SSS_Success)
+		return status;
 
-	return status;
+	return sss_se05x_session_open(pSession, kType_SSS_SE_SE05x, 0,
+				      kSSS_ConnectionType_Encrypted,
+				      pConnectCtx);
 }
 
 /*

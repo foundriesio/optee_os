@@ -8,6 +8,7 @@
 #define _APIS_H
 
 #include <fsl_sss_se05x_types.h>
+#include <nxScp03_Types.h>
 
 /*
  * Context management
@@ -16,12 +17,24 @@ typedef struct {
 	SE_Connect_Ctx_t se05x_open_ctx;
 	sss_se05x_session_t session;
 	sss_se05x_key_store_t ks;
+
+	/* scp support*/
+	struct SE_Auth_Ctx {
+		NXSCP03_StaticCtx_t static_ctx;
+		NXSCP03_DynCtx_t dynamic_ctx;
+	} se05x_auth;
+	sss_session_t host_session;
+	sss_key_store_t host_ks;
 } sss_se05x_ctx_t;
 
 sss_status_t se050_kestore_and_object_init(sss_se05x_ctx_t *pCtx);
 sss_status_t se050_factory_reset(sss_se05x_ctx_t *pCtx);
 sss_status_t se050_session_open(sss_se05x_ctx_t *pCtx);
-
+sss_status_t se050_configure_host(sss_session_t *host_session,
+				  sss_key_store_t *host_ks,
+				  SE_Connect_Ctx_t *se05x_open_ctx,
+				  struct SE_Auth_Ctx *se05x_auth_ctx,
+				  SE_AuthType_t auth_type);
 /* requires a context restart */
 void se050_display_board_info(sss_se05x_session_t *session);
 

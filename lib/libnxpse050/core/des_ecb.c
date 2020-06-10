@@ -107,9 +107,9 @@ static TEE_Result se05x_des_ecb_update(struct crypto_cipher_ctx *ctx,
 
 	for (offs = 0; offs < len; offs += block_size) {
 		dst_len = TEE_DES_BLOCK_SIZE;
-		st = sss_se05x_cipher_update_nocache(&c->des_ctx,
-						     data + offs, block_size,
-						     dst + offs, &dst_len);
+		st = se050_cipher_update_nocache(&c->des_ctx,
+						 data + offs, block_size,
+						 dst + offs, &dst_len);
 		if (st != kStatus_SSS_Success)
 			return TEE_ERROR_BAD_STATE;
 	}

@@ -100,9 +100,8 @@ static TEE_Result se050_inject_public_key(sss_se05x_object_t *ko,
 
 	set_binary_data(key->e, &key_bin.e, &key_bin.e_len);
 	set_binary_data(key->n, &key_bin.n, &key_bin.n_len);
-	st = sss_se05x_key_store_set_rsa_key_bin(se050_kstore, ko,
-						 NULL, &key_bin,
-						 key_bin.n_len * 8);
+	st = se050_key_store_set_rsa_key_bin(se050_kstore, ko, NULL, &key_bin,
+					     key_bin.n_len * 8);
 	if (key_bin.n)
 		free(key_bin.n);
 
@@ -155,10 +154,9 @@ static TEE_Result se050_inject_keypair(sss_se05x_object_t *ko,
 	set_binary_data(key->qp, &key_bin.qp, &key_bin.qp_len);
 	set_binary_data(key->dp, &key_bin.dp, &key_bin.dp_len);
 	set_binary_data(key->dq, &key_bin.dq, &key_bin.dq_len);
-	st = sss_se05x_key_store_set_rsa_key_bin(se050_kstore, ko, &key_bin,
-						 NULL,
-						 crypto_bignum_num_bytes(key->n)
-						 * 8);
+	st = se050_key_store_set_rsa_key_bin(se050_kstore, ko, &key_bin, NULL,
+					     crypto_bignum_num_bytes(key->n)
+					     * 8);
 	if (key_bin.e)
 		free(key_bin.e);
 	if (key_bin.d)

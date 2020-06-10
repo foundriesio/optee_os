@@ -84,13 +84,11 @@ sss_status_t  se050_get_freemem(pSe05xSession_t session_ctx,
  *
  * @return sss_status_t
  */
-sss_status_t sss_se05x_key_store_set_rsa_key_bin(sss_se05x_key_store_t *store,
-						 sss_se05x_object_t *ko,
-						 struct rsa_keypair_bin
-						 *key_pair,
-						 struct rsa_public_key_bin
-						 *key_pub,
-						 size_t key_bit_len)
+sss_status_t se050_key_store_set_rsa_key_bin(sss_se05x_key_store_t *store,
+					     sss_se05x_object_t *ko,
+					     struct rsa_keypair_bin *key_pair,
+					     struct rsa_public_key_bin *key_pub,
+					     size_t key_bit_len)
 {
 	Se05xSession_t *s_ctx = &store->session->s_ctx;
 	SE05x_RSAKeyFormat_t rsa_format = kSE05x_RSAKeyFormat_RAW;
@@ -551,12 +549,10 @@ exit:
  *
  * @return sss_status_t
  */
-sss_status_t sss_se05x_key_store_set_ecc_key_bin(sss_se05x_key_store_t *store,
-						 sss_se05x_object_t *ko,
-						 struct ecc_keypair_bin
-						 *key_pair,
-						 struct ecc_public_key_bin
-						 *key_pub)
+sss_status_t se050_key_store_set_ecc_key_bin(sss_se05x_key_store_t *store,
+					     sss_se05x_object_t *ko,
+					     struct ecc_keypair_bin *key_pair,
+					     struct ecc_public_key_bin *key_pub)
 {
 	SE05x_TransientType_t type = kSE05x_TransientType_Persistent;
 	size_t public_keylen = 0;
@@ -660,11 +656,10 @@ exit:
  *
  * @return sss_status_t
  */
-sss_status_t sss_se05x_key_store_get_ecc_key_bin(sss_se05x_key_store_t *store,
-						 sss_se05x_object_t *ko,
-						 uint8_t *key,
-						 size_t *keylen,
-						 size_t *pKeyBitLen)
+sss_status_t se050_key_store_get_ecc_key_bin(sss_se05x_key_store_t *store,
+					     sss_se05x_object_t *ko,
+					     uint8_t *key, size_t *keylen,
+					     size_t *pKeyBitLen)
 {
 	Se05xSession_t *s_ctx = &store->session->s_ctx;
 	sss_cipher_type_t cipher_type = ko->cipherType;
@@ -721,10 +716,10 @@ exit:
  *
  * @return sss_status_t
  */
-sss_status_t sss_se05x_cipher_update_nocache(sss_se05x_symmetric_t *context,
-					     const uint8_t *srcData,
-					     size_t srcLen,
-					     uint8_t *destData, size_t *destLen)
+sss_status_t se050_cipher_update_nocache(sss_se05x_symmetric_t *context,
+					 const uint8_t *srcData,
+					 size_t srcLen, uint8_t *destData,
+					 size_t *destLen)
 {
 	sss_status_t retval = kStatus_SSS_Fail;
 	smStatus_t status = SM_NOT_OK;

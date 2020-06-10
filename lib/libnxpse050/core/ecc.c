@@ -195,8 +195,8 @@ static TEE_Result se050_inject_public_key(sss_se05x_object_t *ko,
 	set_binary_data(key->y, key_len, &key_bin.y, &key_bin.y_len);
 	key_bin.curve = curve_tee2se050(key->curve);
 
-	st = sss_se05x_key_store_set_ecc_key_bin(se050_kstore, ko, NULL,
-						 &key_bin);
+	st = se050_key_store_set_ecc_key_bin(se050_kstore, ko, NULL, &key_bin);
+
 	if (key_bin.x)
 		free(key_bin.x);
 
@@ -250,8 +250,8 @@ static TEE_Result se050_inject_keypair(sss_se05x_object_t *ko,
 	set_binary_data(key->y, key_len, &key_bin.y, &key_bin.y_len);
 	key_bin.curve = curve_tee2se050(key->curve);
 
-	st = sss_se05x_key_store_set_ecc_key_bin(se050_kstore, ko, &key_bin,
-						 NULL);
+	st = se050_key_store_set_ecc_key_bin(se050_kstore, ko, &key_bin, NULL);
+
 	if (key_bin.d)
 		free(key_bin.d);
 
@@ -396,8 +396,7 @@ TEE_Result crypto_acipher_gen_ecc_key(struct ecc_keypair *key)
 		return TEE_ERROR_BAD_PARAMETERS;
 
 	kB = sizeof(kf);
-	st = sss_se05x_key_store_get_ecc_key_bin(se050_kstore, &ko, kf, &kB,
-						 &kb);
+	st = se050_key_store_get_ecc_key_bin(se050_kstore, &ko, kf, &kB, &kb);
 	if (st != kStatus_SSS_Success) {
 		ret = TEE_ERROR_BAD_PARAMETERS;
 		goto exit;

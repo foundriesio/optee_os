@@ -116,8 +116,8 @@ static TEE_Result des_crypt_cbc(sss_se05x_symmetric_t *ctx,
 			for (i = 0; i < 8; i++)
 				output[i] = (unsigned char)(input[i] ^ iv[i]);
 
-			st = sss_se05x_cipher_update_nocache(ctx, output, 8,
-							     output, &dst_len);
+			st = se050_cipher_update_nocache(ctx, output, 8,
+							 output, &dst_len);
 			if (st != kStatus_SSS_Success)
 				return TEE_ERROR_GENERIC;
 
@@ -131,8 +131,8 @@ static TEE_Result des_crypt_cbc(sss_se05x_symmetric_t *ctx,
 			dst_len = 8;
 			memcpy(temp, input, 8);
 
-			st = sss_se05x_cipher_update_nocache(ctx, input, 8,
-							     output, &dst_len);
+			st = se050_cipher_update_nocache(ctx, input, 8,
+							 output, &dst_len);
 			if (st != kStatus_SSS_Success)
 				return TEE_ERROR_GENERIC;
 

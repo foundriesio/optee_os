@@ -39,16 +39,15 @@ sss_status_t se050_configure_host(sss_session_t *host_session,
 void se050_display_board_info(sss_se05x_session_t *session);
 
 uint8_t se050_key_exists(uint32_t keyId, pSe05xSession_t session_ctx);
-sss_status_t se050_get_freemem(pSe05xSession_t session_ctx,
-			       uint16_t *t, uint16_t *p);
+sss_status_t se050_get_freemem(pSe05xSession_t s_ctx, uint16_t *t, uint16_t *p);
 
 /*
  * Cipher
  */
-sss_status_t sss_se05x_cipher_update_nocache(sss_se05x_symmetric_t *context,
-					     const uint8_t *srcData,
-					     size_t srcLen, uint8_t *destData,
-					     size_t *destLen);
+sss_status_t se050_cipher_update_nocache(sss_se05x_symmetric_t *context,
+					 const uint8_t *srcData,
+					 size_t srcLen, uint8_t *destData,
+					 size_t *destLen);
 
 /*
  * DER utils
@@ -91,7 +90,7 @@ struct ecc_public_key_bin {
 	size_t x_len;
 	uint8_t *y;		/* Public value y */
 	size_t y_len;
-	uint32_t curve;	        /* Curve type */
+	uint32_t curve;		/* Curve type */
 };
 
 struct ecc_keypair_bin {
@@ -101,30 +100,23 @@ struct ecc_keypair_bin {
 	size_t x_len;
 	uint8_t *y;		/* Public value y */
 	size_t y_len;
-	uint32_t curve;	        /* Curve type */
+	uint32_t curve;		/* Curve type */
 };
 
-sss_status_t sss_se05x_key_store_set_rsa_key_bin(sss_se05x_key_store_t
-						 *keyStore,
-						 sss_se05x_object_t *keyObject,
-						 struct rsa_keypair_bin
-						 *key_pair,
-						 struct rsa_public_key_bin
-						 *key_pub,
-						 size_t keyBitLen);
+sss_status_t se050_key_store_set_rsa_key_bin(sss_se05x_key_store_t *keyStore,
+					     sss_se05x_object_t *keyObject,
+					     struct rsa_keypair_bin *k_pair,
+					     struct rsa_public_key_bin *k_pub,
+					     size_t keyBitLen);
 
-sss_status_t sss_se05x_key_store_set_ecc_key_bin(sss_se05x_key_store_t
-						 *keyStore,
-						 sss_se05x_object_t *keyObject,
-						 struct ecc_keypair_bin
-						 *key_pair,
-						 struct ecc_public_key_bin
-						 *key_pub);
+sss_status_t se050_key_store_set_ecc_key_bin(sss_se05x_key_store_t *keyStore,
+					     sss_se05x_object_t *keyObject,
+					     struct ecc_keypair_bin *k_pair,
+					     struct ecc_public_key_bin *k_pub);
 
-sss_status_t sss_se05x_key_store_get_ecc_key_bin(sss_se05x_key_store_t
-						 *keyStore,
-						 sss_se05x_object_t *keyObject,
-						 uint8_t *key,
-						 size_t *keylen,
-						 size_t *pKeyBitLen);
+sss_status_t se050_key_store_get_ecc_key_bin(sss_se05x_key_store_t *keyStore,
+					     sss_se05x_object_t *keyObject,
+					     uint8_t *key,
+					     size_t *keylen,
+					     size_t *pKeyBitLen);
 #endif

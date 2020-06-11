@@ -4,7 +4,6 @@
  * Author: Jorge Ramirez <jorge@foundries.io>
  */
 
-#include <a_trace.h>
 #include <fsl_sss_se05x_apis.h>
 #include <global_platf.h>
 #include <se05x_APDU.h>
@@ -12,6 +11,20 @@
 #include <se05x_tlv.h>
 #include <smCom.h>
 #include <string.h>
+
+/* these macros should use NX_LEVEL_INFO but due to a problem in the stack
+ * - excesive verbosity - we are bypassing while forcing the console (hence the
+ * 0xff). Once the stack is fixed we can use the NX values.
+ */
+
+#define LOG_MAU8_I(msg, buf, len) nLog_au8("Info", 0xff, msg, buf, len)
+
+#define LOG_I(format, ...) nLog("Info", 0xff, format, ##__VA_ARGS__)
+
+#define LOG_E(format, ...) nLog("Info", NX_LEVEL_ERROR, format, ##__VA_ARGS__)
+
+#define LOG_MAU8_E(msg, buf, len) \
+nLog_au8("Info", NX_LEVEL_ERROR, msg, buf, len)
 
 sss_status_t jcop4_get_id(void *ctx)
 {
@@ -69,7 +82,7 @@ sss_status_t jcop4_get_id(void *ctx)
 		goto exit;
 	}
 
-	LOG_W("SE050 JCOP4 Information:");
+	LOG_I("SE050 JCOP4 Information:");
 	LOG_I("%s = 0x%02X", "Tag value - proprietary data 0xFE",
 	      rsp.vTag_value_proprietary_data);
 	LOG_I("%s = 0x%02X", "Length of following data 0x45",
@@ -81,18 +94,18 @@ sss_status_t jcop4_get_id(void *ctx)
 	      rsp.vLength_of_card_identification_data);
 	LOG_I("%s = 0x%02X", "Tag configuration ID (Must be 0x01)",
 	      rsp.vTag_configuration_ID);
-	LOG_D("%s = 0x%02X", "Length configuration ID 0x0C",
+	LOG_I("%s = 0x%02X", "Length configuration ID 0x0C",
 	      rsp.vLength_configuration_ID);
 	LOG_MAU8_I("Configuration ID",
 		   rsp.vConfiguration_ID, sizeof(rsp.vConfiguration_ID));
 
 	LOG_MAU8_I("OEF ID", &rsp.vConfiguration_ID[2], 2);
 	LOG_I("%s = 0x%02X", "Tag patch ID (Must be 0x02)", rsp.vTag_patch_ID);
-	LOG_D("%s = 0x%02X", "Length patch ID 0x08", rsp.vLength_patch_ID);
+	LOG_I("%s = 0x%02X", "Length patch ID 0x08", rsp.vLength_patch_ID);
 	LOG_MAU8_I("Patch ID", rsp.vPatch_ID, sizeof(rsp.vPatch_ID));
 	LOG_I("%s = 0x%02X", "Tag platform build ID1 (Must be 0x03)",
 	      rsp.vTag_platform_build_ID1);
-	LOG_D("%s = 0x%02X", "Length platform build ID 0x18",
+	LOG_I("%s = 0x%02X", "Length platform build ID 0x18",
 	      rsp.vLength_platform_build_ID);
 	LOG_MAU8_I("Platform build ID",
 		   rsp.vPlatform_build_ID, sizeof(rsp.vPlatform_build_ID));
@@ -101,17 +114,17 @@ sss_status_t jcop4_get_id(void *ctx)
 	LOG_I("%s = %s", "JCOP Platform ID", jcop_platform_id);
 	LOG_I("%s = 0x%02X", "Tag FIPS mode (Must be 0x05)",
 	      rsp.vTag_FIPS_mode);
-	LOG_D("%s = 0x%02X", "Length FIPS mode 0x01", rsp.vLength_FIPS_mode);
+	LOG_I("%s = 0x%02X", "Length FIPS mode 0x01", rsp.vLength_FIPS_mode);
 	LOG_I("%s = 0x%02X", "FIPS mode var", rsp.vFIPS_mode);
 	LOG_I("%s = 0x%02X", "Tag pre-perso state (Must be 0x07)",
 	      rsp.vTag_pre_perso_state);
-	LOG_D("%s = 0x%02X", "Length pre-perso state 0x01",
+	LOG_I("%s = 0x%02X", "Length pre-perso state 0x01",
 	      rsp.vLength_pre_perso_state);
 	LOG_I("%s = 0x%02X", "Bit mask of pre-perso state var",
 	      rsp.vBit_mask_of_pre_perso_state);
 
 	LOG_I("%s = 0x%02X", "Tag ROM ID (Must be 0x08)", rsp.vTag_ROM_ID);
-	LOG_D("%s = 0x%02X", "Length ROM ID 0x08", rsp.vLength_ROM_ID);
+	LOG_I("%s = 0x%02X", "Length ROM ID 0x08", rsp.vLength_ROM_ID);
 	LOG_MAU8_I("ROM ID", rsp.vROM_ID, sizeof(rsp.vROM_ID));
 	LOG_MAU8_I("Status Word (SW)", rsp.vStatus_Word_SW_,
 		   sizeof(rsp.vStatus_Word_SW_));

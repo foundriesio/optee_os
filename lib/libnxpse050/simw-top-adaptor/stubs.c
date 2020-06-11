@@ -2,18 +2,12 @@
 /*
  * Copyright (C) Foundries Ltd. 2020 - All Rights Reserved
  * Author: Jorge Ramirez <jorge@foundries.io>
+ *
+ * Empty implementation for undefined symbols due to our use case not selecting
+ * all the files in the se05 middleware
  */
 
 #include <fsl_sss_api.h>
-
-void nLog(const char *comp, int level, const char *format, ...)
-{
-}
-
-void nLog_au8(const char *comp, int level, const char *message,
-	      const unsigned char *array, size_t array_len)
-{
-}
 
 sss_status_t sss_digest_context_init(sss_digest_t *context,
 				     sss_session_t *session,

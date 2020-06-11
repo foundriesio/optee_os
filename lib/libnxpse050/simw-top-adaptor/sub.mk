@@ -26,7 +26,6 @@ incdirs-y += ../simw-top/sss/src/user/crypto/
 # ============ #
 # SE050 stack  #
 # ============ #
-srcs-y += a_trace.c
 srcs-y += stubs.c
 srcs-y += fakes.c
 srcs-y += apis.c

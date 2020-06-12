@@ -98,13 +98,14 @@ sss_status_t se050_get_oid(sss_key_object_mode_t type, uint32_t *val)
 {
 	sss_status_t status = kStatus_SSS_Success;
 	uint16_t pmem = 0, tmem = 0;
-	uint32_t oid;
+	uint32_t oid = 0;
 
 	status = se050_get_freemem(&se050_session->s_ctx, &pmem, &tmem);
 	if (status != kStatus_SSS_Success) {
 		pmem = 0;
 		tmem = 0;
 		EMSG("failure retrieving free memory");
+		return kStatus_SSS_Fail;
 	}
 
 	if (type == kKeyObject_Mode_Transient) {
@@ -131,32 +132,9 @@ sss_status_t se050_get_oid(sss_key_object_mode_t type, uint32_t *val)
 	return kStatus_SSS_Success;
 }
 
-void se050_cleanup_all_persistent_objects(void)
-{
-	sss_status_t status = kStatus_SSS_Fail;
-	sss_se05x_object_t ko;
-	uint32_t id;
-
-	status = sss_se05x_key_object_init(&ko, se050_kstore);
-	if (status != kStatus_SSS_Success)
-		return;
-
-	for (id = OID_PERSISTENT_MIN; id < OID_PERSISTENT_MAX + 1; id++) {
-		if (!se050_key_exists(id, &se050_session->s_ctx))
-			continue;
-
-		status = sss_se05x_key_object_get_handle(&ko, id);
-		if (status != kStatus_SSS_Success)
-			continue;
-
-		sss_se05x_key_store_erase_key(se050_kstore, &ko);
-		IMSG("erased key: 0x%x", id);
-	}
-}
-
 uint32_t se050_rsa_keypair_from_nvm(struct rsa_keypair *key)
 {
-	uint64_t key_id;
+	uint64_t key_id = 0;
 
 	if (crypto_bignum_num_bytes(key->d) != sizeof(uint64_t))
 		return 0;
@@ -171,7 +149,7 @@ uint32_t se050_rsa_keypair_from_nvm(struct rsa_keypair *key)
 
 uint32_t se050_ecc_keypair_from_nvm(struct ecc_keypair *key)
 {
-	uint64_t key_id;
+	uint64_t key_id = 0;
 
 	if (crypto_bignum_num_bytes(key->d) != sizeof(uint64_t))
 		return 0;
@@ -238,7 +216,7 @@ void se050_delete_persistent_key(uint8_t *data, size_t len)
 
 uint64_t se050_generate_private_key(uint32_t oid)
 {
-	if (oid < OID_PERSISTENT_MIN && oid >  OID_PERSISTENT_MAX)
+	if (oid < OID_PERSISTENT_MIN && oid > OID_PERSISTENT_MAX)
 		return 0;
 
 	return WATERMARKED(oid);

@@ -31,10 +31,14 @@ static TEE_Result core_service_init(sss_se05x_ctx_t *ctx,
 	if (kStatus_SSS_Success != status)
 		return TEE_ERROR_GENERIC;
 
+#if CFG_CORE_SE05X_INIT_NVM
+	IMSG("========================");
+	IMSG(" WARNING: FACTORY RESET");
+	IMSG("========================");
 	status = se050_factory_reset(ctx);
 	if (kStatus_SSS_Success != status)
 		return TEE_ERROR_GENERIC;
-
+#endif
 	if (ctx->session.subsystem == kType_SSS_SubSystem_NONE)
 		return TEE_ERROR_GENERIC;
 
@@ -46,12 +50,6 @@ static TEE_Result core_service_init(sss_se05x_ctx_t *ctx,
 	*session = (sss_se05x_session_t *)((void *)&ctx->session);
 	*kstore = (sss_se05x_key_store_t *)((void *)&ctx->ks);
 
-#if CFG_CORE_SE05X_INIT_NVM
-	IMSG("=======================================");
-	IMSG(" WARNING: DELETING ALL SE050 KEYS ");
-	IMSG("=======================================");
-	se050_cleanup_all_persistent_objects();
-#endif
 	return TEE_SUCCESS;
 }
 
@@ -71,9 +69,6 @@ re_initialize:
 		return ret;
 
 	if (reinit) {
-		IMSG("===========================================");
-		IMSG(" WARNING: DISPLAY INFO: unencrypted comms");
-		IMSG("===========================================");
 		se050_display_board_info(se050_session);
 		sss_se05x_session_close(se050_session);
 		reinit = 0;

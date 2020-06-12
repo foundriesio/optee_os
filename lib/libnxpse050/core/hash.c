@@ -9,15 +9,13 @@
 #include <crypto/crypto.h>
 #include <crypto/crypto_impl.h>
 #include <kernel/panic.h>
+#include <se050.h>
 #include <stdlib.h>
 #include <string_ext.h>
 #include <string.h>
 #include <tee_api_types.h>
 #include <utee_defines.h>
 #include <util.h>
-
-#include <se050.h>
-
 struct se050_digest_ctx {
 	struct crypto_hash_ctx hash_ctx;
 	sss_se05x_digest_t digest_ctx;

@@ -9,10 +9,6 @@
 #include <kernel/tee_i2c.h>
 #include <phEseStatus.h>
 #include <phNxpEsePal_i2c.h>
-#include <se05x_apis.h>
-#include <stdlib.h>
-#include <string.h>
-#include <trace.h>
 
 static TEE_Result (*transfer)(struct TEE_I2CRequest *req, size_t *bytes);
 

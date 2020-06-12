@@ -5,17 +5,10 @@
  */
 
 #include <assert.h>
-#include <compiler.h>
-#include <crypto/crypto.h>
 #include <crypto/crypto_impl.h>
 #include <kernel/panic.h>
-#include <mbedtls/md.h>
-#include <se050_utils.h>
 #include <se050.h>
-#include <se050_key.h>
-#include <stdlib.h>
 #include <string.h>
-#include <tee_api_types.h>
 #include <utee_defines.h>
 #include <util.h>
 

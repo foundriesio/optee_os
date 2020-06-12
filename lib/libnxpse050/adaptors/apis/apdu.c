@@ -4,40 +4,71 @@
  * Author: Jorge Ramirez <jorge@foundries.io>
  */
 
-#include <apis.h>
-#include <fsl_sss_policy.h>
-#include <fsl_sss_se05x_apis.h>
-#include <fsl_sss_se05x_policy.h>
-#include <fsl_sss_se05x_scp03.h>
-#include <fsl_sss_se05x_types.h>
-#include <fsl_sss_util_asn1_der.h>
-#include <fsl_sss_util_rsa_sign_utils.h>
-#include <nxEnsure.h>
-#include <nxScp03_Apis.h>
-#include <se05x_APDU.h>
-#include <se05x_const.h>
-#include <se05x_ecc_curves.h>
-#include <se05x_tlv.h>
-#include <sm_api.h>
-#include <smCom.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <trace.h>
+#include <se050_apdu_apis.h>
 
 /*
- * @param keyId
+ * @param pCtx
+ *
+ * @return sss_status_t
+ */
+sss_status_t se050_factory_reset(sss_se05x_ctx_t *ctx)
+{
+	smStatus_t st = SM_OK;
+
+	if (!ctx)
+		return kStatus_SSS_Fail;
+
+	st = Se05x_API_DeleteAll_Iterative(&ctx->session.s_ctx);
+	if (st != SM_OK)
+		 return kStatus_SSS_Fail;
+
+	return kStatus_SSS_Success;
+}
+
+/*
+ * @param context
+ * @param src
+ * @param src_len
+ * @param dst
+ * @param dst_len
+ *
+ * @return sss_status_t
+ */
+sss_status_t se050_cipher_update_nocache(sss_se05x_symmetric_t *ctx,
+					 const uint8_t *src, size_t src_len,
+					 uint8_t *dst, size_t *dst_len)
+{
+	smStatus_t status = SM_NOT_OK;
+
+	if (!ctx || !src || !dst || !dst_len)
+		return kStatus_SSS_Fail;
+
+	status = Se05x_API_CipherUpdate(&ctx->session->s_ctx,
+					ctx->cryptoObjectId,
+					src, src_len,
+					dst, dst_len);
+	if (status != SM_OK)
+		return kStatus_SSS_Fail;
+
+	return kStatus_SSS_Success;
+}
+
+/*
+ * @param key_id
  * @param session_ctx
  *
  * @return uint8_t
  */
-uint8_t se050_key_exists(uint32_t keyId, pSe05xSession_t session_ctx)
+uint8_t se050_key_exists(uint32_t key_id, pSe05xSession_t ctx)
 {
 	SE05x_Result_t inuse = kSE05x_Result_FAILURE;
-	smStatus_t retStatus = SM_OK;
+	smStatus_t status = SM_OK;
 
-	retStatus = Se05x_API_CheckObjectExists(session_ctx, keyId, &inuse);
-	if (retStatus != SM_OK)
+	if (!ctx)
+		return 0;
+
+	status = Se05x_API_CheckObjectExists(ctx, key_id, &inuse);
+	if (status != SM_OK)
 		return 0;
 
 	if (inuse == kSE05x_Result_SUCCESS)
@@ -47,37 +78,8 @@ uint8_t se050_key_exists(uint32_t keyId, pSe05xSession_t session_ctx)
 }
 
 /*
- * @param session_ctx
- * @param type
- * @param val
- *
- * @return sss_status_t
- */
-sss_status_t  se050_get_freemem(pSe05xSession_t session_ctx,
-				uint16_t *p, uint16_t *t)
-{
-	smStatus_t ret = SM_OK;
-
-	ret = Se05x_API_GetFreeMemory(session_ctx,
-				      kSE05x_MemoryType_PERSISTENT, p);
-	if (ret != SM_OK) {
-		EMSG("persistent");
-		return kSE05x_Result_FAILURE;
-	}
-
-	ret = Se05x_API_GetFreeMemory(session_ctx,
-				      kSE05x_MemoryType_TRANSIENT_RESET, t);
-	if (ret != SM_OK) {
-		EMSG("transient");
-		return kSE05x_Result_FAILURE;
-	}
-
-	return kStatus_SSS_Success;
-}
-
-/*
  * @param store
- * @param ko
+ * @param k_object
  * @param key_pair
  * @param key_pub
  * @param key_bit_len
@@ -85,24 +87,30 @@ sss_status_t  se050_get_freemem(pSe05xSession_t session_ctx,
  * @return sss_status_t
  */
 sss_status_t se050_key_store_set_rsa_key_bin(sss_se05x_key_store_t *store,
-					     sss_se05x_object_t *ko,
+					     sss_se05x_object_t *k_object,
 					     struct rsa_keypair_bin *key_pair,
 					     struct rsa_public_key_bin *key_pub,
 					     size_t key_bit_len)
 {
-	Se05xSession_t *s_ctx = &store->session->s_ctx;
 	SE05x_RSAKeyFormat_t rsa_format = kSE05x_RSAKeyFormat_RAW;
-	SE05x_TransientType_t type = ko->isPersistant ?
-				     kSE05x_TransientType_Persistent :
-				     kSE05x_TransientType_Transient;
-	uint32_t key_type = ko->objectType;
+	SE05x_TransientType_t type = kSE05x_TransientType_Transient;
+	Se05xSession_t *s_ctx = NULL;
+	uint32_t key_type = 0;
 	Se05xPolicy_t policy = {
 		.value = NULL, .value_len = 0,
 	};
-	sss_status_t retval = kStatus_SSS_Fail;
+	sss_status_t ret = kStatus_SSS_Fail;
 	smStatus_t status = SM_NOT_OK;
 
-	switch (ko->cipherType) {
+	if (!store || !store->session || !k_object)
+		return kStatus_SSS_Fail;
+
+	s_ctx = &store->session->s_ctx;
+	key_type = k_object->objectType;
+	if (k_object->isPersistant)
+		type = kSE05x_TransientType_Persistent;
+
+	switch (k_object->cipherType) {
 	case kSSS_CipherType_RSA:
 		rsa_format = kSE05x_RSAKeyFormat_RAW;
 		break;
@@ -110,11 +118,11 @@ sss_status_t se050_key_store_set_rsa_key_bin(sss_se05x_key_store_t *store,
 		rsa_format = kSE05x_RSAKeyFormat_CRT;
 		break;
 	default:
-		retval = kStatus_SSS_Fail;
+		ret = kStatus_SSS_Fail;
 		goto exit;
 	}
 
-	if (se050_key_exists(ko->keyId, s_ctx))
+	if (se050_key_exists(k_object->keyId, s_ctx))
 		key_bit_len = 0;
 
 	if (key_type != kSSS_KeyPart_Public)
@@ -123,7 +131,7 @@ sss_status_t se050_key_store_set_rsa_key_bin(sss_se05x_key_store_t *store,
 	/* Set the Public Exponent */
 	status = Se05x_API_WriteRSAKey(s_ctx,
 				       &policy,
-				       ko->keyId,
+				       k_object->keyId,
 				       (U16)key_bit_len,
 				       SE05X_RSA_NO_p,
 				       SE05X_RSA_NO_q,
@@ -139,14 +147,14 @@ sss_status_t se050_key_store_set_rsa_key_bin(sss_se05x_key_store_t *store,
 				       rsa_format);
 	if (status != SM_OK) {
 		EMSG("keybitlen %ld, e_len %ld", key_bit_len, key_pub->e_len);
-		retval = kStatus_SSS_Fail;
+		ret = kStatus_SSS_Fail;
 		goto exit;
 	}
 
 	/* Set the Modulus */
 	status = Se05x_API_WriteRSAKey(s_ctx,
 				       NULL,
-				       ko->keyId,
+				       k_object->keyId,
 				       0,
 				       SE05X_RSA_NO_p,
 				       SE05X_RSA_NO_q,
@@ -161,7 +169,7 @@ sss_status_t se050_key_store_set_rsa_key_bin(sss_se05x_key_store_t *store,
 				       kSE05x_KeyPart_NA,
 				       rsa_format);
 	if (status == SM_OK)
-		retval = kStatus_SSS_Success;
+		ret = kStatus_SSS_Success;
 
 	goto exit;
 
@@ -169,10 +177,10 @@ label_private:
 	if (key_type != kSSS_KeyPart_Private)
 		goto label_pair;
 
-	if (ko->cipherType == kSSS_CipherType_RSA) {
+	if (k_object->cipherType == kSSS_CipherType_RSA) {
 		status = Se05x_API_WriteRSAKey(s_ctx,
 					       &policy,
-					       ko->keyId,
+					       k_object->keyId,
 					       (U16)key_bit_len,
 					       SE05X_RSA_NO_p,
 					       SE05X_RSA_NO_q,
@@ -187,13 +195,13 @@ label_private:
 					       kSE05x_KeyPart_Pair,
 					       rsa_format);
 		if (status != SM_OK) {
-			retval = kStatus_SSS_Fail;
+			ret = kStatus_SSS_Fail;
 			goto exit;
 		}
 
 		status = Se05x_API_WriteRSAKey(s_ctx,
 					       NULL,
-					       ko->keyId,
+					       k_object->keyId,
 					       0,
 					       SE05X_RSA_NO_p,
 					       SE05X_RSA_NO_q,
@@ -208,15 +216,15 @@ label_private:
 					       kSE05x_KeyPart_NA,
 					       rsa_format);
 		if (status == SM_OK)
-			retval = kStatus_SSS_Success;
+			ret = kStatus_SSS_Success;
 
 		goto exit;
 	}
 
-	if (ko->cipherType == kSSS_CipherType_RSA_CRT) {
+	if (k_object->cipherType == kSSS_CipherType_RSA_CRT) {
 		status = Se05x_API_WriteRSAKey(s_ctx,
 					       &policy,
-					       ko->keyId,
+					       k_object->keyId,
 					       (U16)key_bit_len,
 					       key_pair->p,
 					       key_pair->p_len,
@@ -231,13 +239,13 @@ label_private:
 					       kSE05x_KeyPart_Private,
 					       rsa_format);
 		if (status != SM_OK) {
-			retval = kStatus_SSS_Fail;
+			ret = kStatus_SSS_Fail;
 			goto exit;
 		}
 
 		status = Se05x_API_WriteRSAKey(s_ctx,
 					       NULL,
-					       ko->keyId,
+					       k_object->keyId,
 					       0,
 					       SE05X_RSA_NO_p,
 					       key_pair->q,
@@ -252,13 +260,13 @@ label_private:
 					       kSE05x_KeyPart_NA,
 					       rsa_format);
 		if (status != SM_OK) {
-			retval = kStatus_SSS_Fail;
+			ret = kStatus_SSS_Fail;
 			goto exit;
 		}
 
 		status = Se05x_API_WriteRSAKey(s_ctx,
 					       NULL,
-					       ko->keyId,
+					       k_object->keyId,
 					       0,
 					       SE05X_RSA_NO_p,
 					       SE05X_RSA_NO_q,
@@ -273,13 +281,13 @@ label_private:
 					       kSE05x_KeyPart_NA,
 					       rsa_format);
 		if (status != SM_OK) {
-			retval = kStatus_SSS_Fail;
+			ret = kStatus_SSS_Fail;
 			goto exit;
 		}
 
 		status = Se05x_API_WriteRSAKey(s_ctx,
 					       NULL,
-					       ko->keyId,
+					       k_object->keyId,
 					       0,
 					       SE05X_RSA_NO_p,
 					       SE05X_RSA_NO_q,
@@ -294,13 +302,13 @@ label_private:
 					       kSE05x_KeyPart_NA,
 					       rsa_format);
 		if (status != SM_OK) {
-			retval = kStatus_SSS_Fail;
+			ret = kStatus_SSS_Fail;
 			goto exit;
 		}
 
 		status = Se05x_API_WriteRSAKey(s_ctx,
 					       NULL,
-					       ko->keyId,
+					       k_object->keyId,
 					       0,
 					       SE05X_RSA_NO_p,
 					       SE05X_RSA_NO_q,
@@ -316,7 +324,7 @@ label_private:
 					       rsa_format);
 
 		if (status == SM_OK)
-			retval = kStatus_SSS_Success;
+			ret = kStatus_SSS_Success;
 	}
 
 	goto exit;
@@ -325,10 +333,10 @@ label_pair:
 	if (key_type != kSSS_KeyPart_Pair)
 		goto exit;
 
-	if (ko->cipherType == kSSS_CipherType_RSA) {
+	if (k_object->cipherType == kSSS_CipherType_RSA) {
 		status = Se05x_API_WriteRSAKey(s_ctx,
 					       &policy,
-					       ko->keyId,
+					       k_object->keyId,
 					       (U16)key_bit_len,
 					       SE05X_RSA_NO_p,
 					       SE05X_RSA_NO_q,
@@ -343,13 +351,13 @@ label_pair:
 					       kSE05x_KeyPart_Pair,
 					       rsa_format);
 		if (status != SM_OK) {
-			retval = kStatus_SSS_Fail;
+			ret = kStatus_SSS_Fail;
 			goto exit;
 		}
 
 		status = Se05x_API_WriteRSAKey(s_ctx,
 					       NULL,
-					       ko->keyId,
+					       k_object->keyId,
 					       0,
 					       SE05X_RSA_NO_p,
 					       SE05X_RSA_NO_q,
@@ -364,13 +372,13 @@ label_pair:
 					       kSE05x_KeyPart_NA,
 					       rsa_format);
 		if (status != SM_OK) {
-			retval = kStatus_SSS_Fail;
+			ret = kStatus_SSS_Fail;
 			goto exit;
 		}
 
 		status = Se05x_API_WriteRSAKey(s_ctx,
 					       NULL,
-					       ko->keyId,
+					       k_object->keyId,
 					       0,
 					       SE05X_RSA_NO_p,
 					       SE05X_RSA_NO_q,
@@ -385,15 +393,15 @@ label_pair:
 					       kSE05x_KeyPart_NA,
 					       rsa_format);
 		if (status == SM_OK)
-			retval = kStatus_SSS_Success;
+			ret = kStatus_SSS_Success;
 
 		goto exit;
 	}
 
-	if (ko->cipherType == kSSS_CipherType_RSA_CRT) {
+	if (k_object->cipherType == kSSS_CipherType_RSA_CRT) {
 		status = Se05x_API_WriteRSAKey(s_ctx,
 					       &policy,
-					       ko->keyId,
+					       k_object->keyId,
 					       (U16)key_bit_len,
 					       key_pair->p,
 					       key_pair->p_len,
@@ -408,13 +416,13 @@ label_pair:
 					       kSE05x_KeyPart_Pair,
 					       rsa_format);
 		if (status != SM_OK) {
-			retval = kStatus_SSS_Fail;
+			ret = kStatus_SSS_Fail;
 			goto exit;
 		}
 
 		status = Se05x_API_WriteRSAKey(s_ctx,
 					       NULL,
-					       ko->keyId,
+					       k_object->keyId,
 					       0,
 					       SE05X_RSA_NO_p,
 					       key_pair->q,
@@ -429,13 +437,13 @@ label_pair:
 					       kSE05x_KeyPart_NA,
 					       rsa_format);
 		if (status != SM_OK) {
-			retval = kStatus_SSS_Fail;
+			ret = kStatus_SSS_Fail;
 			goto exit;
 		}
 
 		status = Se05x_API_WriteRSAKey(s_ctx,
 					       NULL,
-					       ko->keyId,
+					       k_object->keyId,
 					       0,
 					       SE05X_RSA_NO_p,
 					       SE05X_RSA_NO_q,
@@ -450,13 +458,13 @@ label_pair:
 					       kSE05x_KeyPart_NA,
 					       rsa_format);
 		if (status != SM_OK) {
-			retval = kStatus_SSS_Fail;
+			ret = kStatus_SSS_Fail;
 			goto exit;
 		}
 
 		status = Se05x_API_WriteRSAKey(s_ctx,
 					       NULL,
-					       ko->keyId,
+					       k_object->keyId,
 					       0,
 					       SE05X_RSA_NO_p,
 					       SE05X_RSA_NO_q,
@@ -471,13 +479,13 @@ label_pair:
 					       kSE05x_KeyPart_NA,
 					       rsa_format);
 		if (status != SM_OK) {
-			retval = kStatus_SSS_Fail;
+			ret = kStatus_SSS_Fail;
 			goto exit;
 		}
 
 		status = Se05x_API_WriteRSAKey(s_ctx,
 					       NULL,
-					       ko->keyId,
+					       k_object->keyId,
 					       0,
 					       SE05X_RSA_NO_p,
 					       SE05X_RSA_NO_q,
@@ -492,13 +500,13 @@ label_pair:
 					       kSE05x_KeyPart_NA,
 					       rsa_format);
 		if (status != SM_OK) {
-			retval = kStatus_SSS_Fail;
+			ret = kStatus_SSS_Fail;
 			goto exit;
 		}
 
 		status = Se05x_API_WriteRSAKey(s_ctx,
 					       NULL,
-					       ko->keyId,
+					       k_object->keyId,
 					       0,
 					       SE05X_RSA_NO_p,
 					       SE05X_RSA_NO_q,
@@ -513,13 +521,13 @@ label_pair:
 					       kSE05x_KeyPart_NA,
 					       rsa_format);
 		if (status != SM_OK) {
-			retval = kStatus_SSS_Fail;
+			ret = kStatus_SSS_Fail;
 			goto exit;
 		}
 
 		status = Se05x_API_WriteRSAKey(s_ctx,
 					       NULL,
-					       ko->keyId,
+					       k_object->keyId,
 					       0,
 					       SE05X_RSA_NO_p,
 					       SE05X_RSA_NO_q,
@@ -535,22 +543,22 @@ label_pair:
 					       rsa_format);
 
 		if (status == SM_OK)
-			retval = kStatus_SSS_Success;
+			ret = kStatus_SSS_Success;
 	}
 exit:
-	return retval;
+	return ret;
 }
 
 /*
  * @param store
- * @param ko
+ * @param k_object
  * @param key_pair
  * @param key_pub
  *
  * @return sss_status_t
  */
 sss_status_t se050_key_store_set_ecc_key_bin(sss_se05x_key_store_t *store,
-					     sss_se05x_object_t *ko,
+					     sss_se05x_object_t *k_object,
 					     struct ecc_keypair_bin *key_pair,
 					     struct ecc_public_key_bin *key_pub)
 {
@@ -562,18 +570,18 @@ sss_status_t se050_key_store_set_ecc_key_bin(sss_se05x_key_store_t *store,
 	Se05xPolicy_t policy = {
 		.value = NULL, .value_len = 0,
 	};
-	sss_status_t retval = kStatus_SSS_Fail;
+	sss_status_t ret = kStatus_SSS_Fail;
 	smStatus_t status = SM_NOT_OK;
 
-	if (!ko || !store || !store->session || (!key_pair && !key_pub))
-		return retval;
+	if (!k_object || !store || !store->session || (!key_pair && !key_pub))
+		return kStatus_SSS_Fail;
 
 	s_ctx = &store->session->s_ctx;
-	ko->curve_id = key_pair ? key_pair->curve : key_pub->curve;
-	type = ko->isPersistant ? kSE05x_TransientType_Persistent :
+	k_object->curve_id = key_pair ? key_pair->curve : key_pub->curve;
+	type = k_object->isPersistant ? kSE05x_TransientType_Persistent :
 				  kSE05x_TransientType_Transient;
 
-	if (ko->objectType != kSSS_KeyPart_Pair)
+	if (k_object->objectType != kSSS_KeyPart_Pair)
 		goto label_public;
 
 	public_keylen = key_pair->x_len + key_pair->y_len + 1;
@@ -587,7 +595,7 @@ sss_status_t se050_key_store_set_ecc_key_bin(sss_se05x_key_store_t *store,
 	status = Se05x_API_WriteECKey(s_ctx,
 				      &policy,
 				      SE05x_MaxAttemps_UNLIMITED,
-				      ko->keyId,
+				      k_object->keyId,
 				      (SE05x_ECCurve_t)key_pair->curve,
 				      key_pair->d,
 				      key_pair->d_len,
@@ -596,11 +604,11 @@ sss_status_t se050_key_store_set_ecc_key_bin(sss_se05x_key_store_t *store,
 				      type,
 				      kSE05x_KeyPart_Pair);
 
-	retval = status == SM_OK ? kStatus_SSS_Success : kStatus_SSS_Fail;
+	ret = status == SM_OK ? kStatus_SSS_Success : kStatus_SSS_Fail;
 	goto exit;
 
 label_public:
-	if (ko->objectType != kSSS_KeyPart_Public)
+	if (k_object->objectType != kSSS_KeyPart_Public)
 		goto label_private;
 
 	public_keylen = key_pub->x_len + key_pub->y_len + 1;
@@ -614,7 +622,7 @@ label_public:
 	status = Se05x_API_WriteECKey(s_ctx,
 				      &policy,
 				      SE05x_MaxAttemps_UNLIMITED,
-				      ko->keyId,
+				      k_object->keyId,
 				      (SE05x_ECCurve_t)key_pub->curve,
 				      NULL,
 				      0,
@@ -622,17 +630,17 @@ label_public:
 				      public_keylen,
 				      type,
 				      kSE05x_KeyPart_Public);
-	retval = status == SM_OK ? kStatus_SSS_Success : kStatus_SSS_Fail;
+	ret = status == SM_OK ? kStatus_SSS_Success : kStatus_SSS_Fail;
 	goto exit;
 
 label_private:
-	if (ko->objectType != kSSS_KeyPart_Private)
+	if (k_object->objectType != kSSS_KeyPart_Private)
 		goto exit;
 
 	status = Se05x_API_WriteECKey(s_ctx,
 				      &policy,
 				      SE05x_MaxAttemps_UNLIMITED,
-				      ko->keyId,
+				      k_object->keyId,
 				      (SE05x_ECCurve_t)key_pair->curve,
 				      key_pair->d,
 				      key_pair->d_len,
@@ -640,31 +648,37 @@ label_private:
 				      0,
 				      type,
 				      kSE05x_KeyPart_Private);
-	retval = status == SM_OK ? kStatus_SSS_Success : kStatus_SSS_Fail;
+	ret = status == SM_OK ? kStatus_SSS_Success : kStatus_SSS_Fail;
 	goto exit;
 
 exit:
-	return retval;
+	return ret;
 }
 
 /*
  * @param store
- * @param ko
+ * @param k_object
  * @param key
  * @param keylen
- * @param pKeyBitLen
  *
  * @return sss_status_t
  */
 sss_status_t se050_key_store_get_ecc_key_bin(sss_se05x_key_store_t *store,
-					     sss_se05x_object_t *ko,
-					     uint8_t *key, size_t *keylen,
-					     size_t *pKeyBitLen)
+					     sss_se05x_object_t *k_object,
+					     uint8_t *key, size_t *key_len)
 {
-	Se05xSession_t *s_ctx = &store->session->s_ctx;
-	sss_cipher_type_t cipher_type = ko->cipherType;
-	sss_status_t retval = kStatus_SSS_Fail;
+	Se05xSession_t *s_ctx = NULL;
+	sss_cipher_type_t cipher_type = kSSS_CipherType_NONE;
+	sss_status_t ret = kStatus_SSS_Fail;
 	smStatus_t status = SM_NOT_OK;
+	uint8_t *key_buf = NULL;
+	size_t key_buflen = 0;
+
+	if (!store || !store->session || !k_object || !key || !key_len)
+		return kStatus_SSS_Fail;
+
+	s_ctx = &store->session->s_ctx;
+	cipher_type = k_object->cipherType;
 
 	switch (cipher_type) {
 	case kSSS_CipherType_EC_NIST_P:
@@ -672,178 +686,51 @@ sss_status_t se050_key_store_get_ecc_key_bin(sss_se05x_key_store_t *store,
 	case kSSS_CipherType_EC_BRAINPOOL:
 	case kSSS_CipherType_EC_BARRETO_NAEHRIG:
 	case kSSS_CipherType_EC_MONTGOMERY:
-	case kSSS_CipherType_EC_TWISTED_ED: {
-		uint8_t *key_buf = NULL;
-		size_t key_buflen = 0;
-
-		add_ecc_header(key, &key_buf, &key_buflen, ko->curve_id);
-		status = Se05x_API_ReadObject(s_ctx, ko->keyId, 0, 0,
-					      key_buf, keylen);
+	case kSSS_CipherType_EC_TWISTED_ED:
+		add_ecc_header(key, &key_buf, &key_buflen, k_object->curve_id);
+		status = Se05x_API_ReadObject(s_ctx, k_object->keyId,
+					      0, 0, key_buf,
+					      key_len);
 		if (status != SM_OK)
 			goto exit;
 
-		*keylen += key_buflen;
+		*key_len += key_buflen;
 
-#if defined(DEBUG_ECC)
-		LOG_AU8_I(key, *keylen);
-#endif
 		/* return only the binary data */
-		key_buflen = *keylen;
-		get_ecc_raw_data(key, &key_buf, &key_buflen, ko->curve_id);
-		*keylen = key_buflen;
+		key_buflen = *key_len;
+		get_ecc_raw_data(key, &key_buf, &key_buflen,
+				 k_object->curve_id);
+		*key_len = key_buflen;
 		memcpy(key, key_buf, key_buflen);
 
-#if defined(DEBUG_ECC)
-		LOG_AU8_I(key, key_buflen);
-#endif
 		break;
-	}
 	default:
 		goto exit;
 	}
 
-	retval = kStatus_SSS_Success;
+	ret = kStatus_SSS_Success;
 exit:
-	return retval;
+	return ret;
 }
 
 /*
- * @param context
- * @param srcData
- * @param srcLen
- * @param destData
- * @param destLen
- *
- * @return sss_status_t
- */
-sss_status_t se050_cipher_update_nocache(sss_se05x_symmetric_t *context,
-					 const uint8_t *srcData,
-					 size_t srcLen, uint8_t *destData,
-					 size_t *destLen)
-{
-	sss_status_t retval = kStatus_SSS_Fail;
-	smStatus_t status = SM_NOT_OK;
-
-	status = Se05x_API_CipherUpdate(&context->session->s_ctx,
-					context->cryptoObjectId,
-					srcData, srcLen,
-					destData, destLen);
-	if (status != SM_OK)
-		goto exit;
-
-	retval = kStatus_SSS_Success;
-exit:
-	if (retval == kStatus_SSS_Fail)
-		*destLen = 0;
-
-	return retval;
-}
-
-/*
- * @param pCtx
- *
- * @return sss_status_t
- */
-sss_status_t se050_session_open(sss_se05x_ctx_t *pCtx, bool encryption)
-{
-	SE_Connect_Ctx_t *pConnectCtx = &pCtx->se05x_open_ctx;
-	sss_se05x_session_t *pSession = &pCtx->session;
-	sss_status_t status = kStatus_SSS_Fail;
-
-	pConnectCtx->connType = kType_SE_Conn_Type_T1oI2C;
-	pConnectCtx->portName = NULL;
-
-	if (!encryption)
-		return sss_se05x_session_open(pSession, kType_SSS_SE_SE05x, 0,
-				      kSSS_ConnectionType_Plain, pConnectCtx);
-
-	status = se050_configure_host(&pCtx->host_session,
-				      &pCtx->host_ks,
-				      &pCtx->se05x_open_ctx,
-				      &pCtx->se05x_auth,
-				      kSSS_AuthType_SCP03);
-	if (status != kStatus_SSS_Success)
-		return status;
-
-	return sss_se05x_session_open(pSession, kType_SSS_SE_SE05x, 0,
-				      kSSS_ConnectionType_Encrypted,
-				      pConnectCtx);
-}
-
-/*
- * @param pCtx
- *
- * @return sss_status_t
- */
-sss_status_t se050_factory_reset(sss_se05x_ctx_t *pCtx)
-{
-	sss_status_t status = kStatus_SSS_Fail;
-	smStatus_t st = SM_OK;
-
-	st = Se05x_API_DeleteAll_Iterative(&pCtx->session.s_ctx);
-	if (st == SM_OK)
-		status = kStatus_SSS_Success;
-
-	return status;
-}
-
-/*
- * @param pCtx
- *
- * @return sss_status_t
- */
-sss_status_t se050_kestore_and_object_init(sss_se05x_ctx_t *pCtx)
-{
-	sss_status_t status = kStatus_SSS_Fail;
-
-	if (!pCtx)
-		return status;
-
-	status = sss_se05x_key_store_context_init(&pCtx->ks, &pCtx->session);
-	if (status != kStatus_SSS_Success)
-		EMSG(" sss_key_store_context_init Failed...");
-
-	return status;
-}
-
-/*
- * Parse a DER formated signature and extract the raw data
+ * @param session_ctx
  * @param p
- * @param p_len
+ * @param type
+ *
+ * @return sss_status_t
  */
-void se050_signature_der2bin(uint8_t *p, size_t *p_len)
+sss_status_t  se050_get_free_memory(pSe05xSession_t ctx, uint16_t *p,
+				    SE05x_MemoryType_t type)
 {
-	uint8_t buffer[256] = { 0 };
-	uint8_t *k, *output = p;
-	size_t buffer_len = 0;
-	size_t len = 0;
+	smStatus_t ret = SM_OK;
 
-	if (!p || !p_len)
-		return;
+	if (!p || !ctx)
+		return kStatus_SSS_Fail;
 
-	p++;		/* tag: 0x30      */
-	p++;		/* field: total len */
-	p++;		/* tag: 0x02      */
-	len = *p++;	/* field: r_len */
+	ret = Se05x_API_GetFreeMemory(ctx, type, p);
+	if (ret != SM_OK)
+		return kStatus_SSS_Fail;
 
-	if (*p == 0x00) { /* handle special case */
-		len = len - 1;
-		p++;
-	}
-	memcpy(buffer, p, len);
-
-	p = p + len;
-	p++;		/* tag: 0x2       */
-	k = p;
-	p++;		/* field: s_len     */
-
-	if (*p == 0x00) { /* handle special case */
-		*k = *k - 1;
-		p++;
-	}
-	memcpy(buffer + len, p, *k);
-	buffer_len = len + *k;
-
-	memcpy(output, buffer, buffer_len);
-	*p_len = buffer_len;
+	return kStatus_SSS_Success;
 }

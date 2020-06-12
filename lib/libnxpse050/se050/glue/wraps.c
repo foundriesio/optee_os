@@ -10,9 +10,6 @@
 #include <kernel/delay.h>
 #include <nxLog.h>
 #include <printk.h>
-#include <stdarg.h>
-#include <stdbool.h>
-#include <stddef.h>
 #include <trace.h>
 
 struct strbuf {

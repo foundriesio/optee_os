@@ -11,6 +11,15 @@ Stack Documentation and original code:
 - untar SE050-PLUG-TRUST-MW.zip
 - open simw-top/doc/index.html
 
+Port Code Structure:
+=====================
+ - core: crypto operations as per OP-TEE
+ - adaptors: functional apis/utils to call into the SE050
+ - se050
+   - glue: additional glue files required to build simw-top and
+     configure the I2C interface
+   - simw-top: the SE050 SDK/Middleware
+
 Port Caveats:
 =============
 1. One single global session and One single global key store.
@@ -55,6 +64,7 @@ The trampoline driver requires no configuration.
 To select the bus used for the SE050 use the following build
 configuration option (set to I2C3 (0x2) by default)
   - CFG_CORE_SE05X_I2C_BUS
+  - CFG_CORE_SE05X_BAUDRATE (bps)
 
 The pictures in the images/ folder show SE050 connection to an
 IMX8MM-LPDDR4 on I2C3.
@@ -71,6 +81,11 @@ operations, are not stored in the SE050.
 
 Operation
 =========
+The i2c communication starts when the se050 context is loaded (
+adaptors/utils/context.c). Initially it will use the native i2c
+driver. Once the normal world boots, OP-TEE disables the native driver
+and loada the trampoline driver (check se050/glue/i2c.c).
+
 Some of the crypto operations, even though they should work as the
 code is generic, they do not (ie hmac384, des3 ..); having run op-tee's xtest
 as a validation, those tests that did not pass have been delegated to
@@ -79,42 +94,67 @@ libtomcrypt (hence the pick-and-poke done in the makefiles).
 Regression tests
 ================
 The crypto subset of xtests were used to validate the integration in
-op-tee. It is available here [2].
+op-tee. It is available at https://github.com/ldts/optee_test
 
 Once built and installed (TA's are installed in /usr/lib/optee_armtz)
 just execute as:
 $ sudo xtest
 
+At the end of the test -takes about 30 minutes- you should see:
+  Result of testsuite regression:
+  regression_4001 OK
+  regression_4002 OK
+  regression_4003 OK
+  regression_4004 OK
+  regression_4005 OK
+  regression_4006 OK
+  regression_4007_symmetric OK
+  regression_4007_rsa OK
+  regression_4007_dh OK
+  regression_4007_dsa OK
+  regression_4007_ecc OK
+  regression_4008 OK
+  regression_4009 OK
+  regression_4010 OK
+  regression_4011 OK
+  regression_4012 OK
+  regression_4013 OK
+  regression_8001 OK
+  regression_8002 OK
+
 Note
 ====
-To help with a visual understanding and navegation of op-tee please
-have a look at the diagrams/ folder
+To help with a visual understanding and navegation of op-tee have a
+look at the diagrams/ folder.
 
 CONFIGS:
 =======
 
-CFG_CORE_SE05X_I2C_BUS: I2C bus
-            __CFG
-    I2C1     0
-    I2C2     1
-    I2C3     2
+CFG_CORE_SE05X_I2C_BUS: I2C bus (default = 2)
+     I2C1     0
+     I2C2     1
+     I2C3     2
+
+CFG_CORE_SE05X_BAUDRATE: I2C baudrate (default = 340000 bps)
+
+CFG_CORE_SE05X_INIT_NVM: booting with this set to 1 causes all
+persistent objects to be deleted from the SE050 NVM (default = 0)
 
 CFG_CORE_SE05X_DISPLAY_INFO: displays the SE050 Applet and JCOP4
  information (shows the OEFID required to know the default keys to use
  in SCP03). Doing this requires that we reinitialize the context.
+ (default = 0)
+     0: does not display
+     1: displays
 
-  0: does not display
-  1: displays
-
-CFG_CORE_SE05X_OEFID: the OEFID determins the keys to use when
+CFG_CORE_SE05X_OEFID: the OEFID determines the keys to use when
   stablishing communications with the SE050. Once we know the OEFID, we
   no longer need to display the information and we can simply provide
-  this config.
-                           __CFG                              
-    SE050A1_ID 0xA204        0  
-    SE050A2_ID 0xA205        1
-    SE050B1_ID 0xA202        2
-    SE050B2_ID 0xA203        3
-    SE050C1_ID 0xA200        4 
-    SE050C2_ID 0xA201        5
-    SE050DV_ID 0xA1F4        6
+  this config (default = 6)
+     SE050A1_ID 0xA204        0
+     SE050A2_ID 0xA205        1
+     SE050B1_ID 0xA202        2
+     SE050B2_ID 0xA203        3
+     SE050C1_ID 0xA200        4
+     SE050C2_ID 0xA201        5
+     SE050DV_ID 0xA1F4        6

@@ -6,7 +6,7 @@
 
 #include <fsl_sss_se05x_apis.h>
 #include <global_platf.h>
-#include <se05x_APDU.h>
+#include <se050.h>
 #include <se05x_const.h>
 #include <se05x_tlv.h>
 #include <smCom.h>
@@ -139,7 +139,7 @@ exit:
 	.val = (kSE05x_AppletConfig_##__x),	\
 	}
 
-static int show_config(uint16_t cfg)
+static void show_config(uint16_t cfg)
 {
 	struct items {
 		uint16_t val;
@@ -208,8 +208,15 @@ exit:
 	return status;
 }
 
+/*
+ *
+ * @param session
+ */
 void se050_display_board_info(sss_se05x_session_t *session)
 {
+	if (!session)
+		return;
+
 	applet_get_id(session);
 	jcop4_get_id(session->s_ctx.conn_ctx);
 }

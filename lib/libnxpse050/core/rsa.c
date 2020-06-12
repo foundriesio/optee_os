@@ -8,12 +8,7 @@
 #include <crypto/crypto.h>
 #include <kernel/panic.h>
 #include <se050.h>
-#include <se050_key.h>
-#include <stdlib.h>
 #include <string.h>
-#include <tee/tee_cryp_utl.h>
-#include <trace.h>
-#include <utee_defines.h>
 
 static uint32_t tee2se050(uint32_t algo)
 {
@@ -76,14 +71,14 @@ static TEE_Result set_binary_data(struct bignum *b, uint8_t **p, size_t *len)
 	return TEE_SUCCESS;
 }
 
-static TEE_Result se050_inject_public_key(sss_se05x_object_t *ko,
+static TEE_Result se050_inject_public_key(sss_se05x_object_t *k_object,
 					  struct rsa_public_key *key)
 {
 	sss_status_t st = kStatus_SSS_Fail;
 	struct rsa_public_key_bin key_bin = { 0 };
 	uint32_t oid = 0;
 
-	st = sss_se05x_key_object_init(ko, se050_kstore);
+	st = sss_se05x_key_object_init(k_object, se050_kstore);
 	if (st != kStatus_SSS_Success)
 		return TEE_ERROR_BAD_PARAMETERS;
 
@@ -91,7 +86,7 @@ static TEE_Result se050_inject_public_key(sss_se05x_object_t *ko,
 	if (st != kStatus_SSS_Success)
 		return TEE_ERROR_GENERIC;
 
-	st = sss_se05x_key_object_allocate_handle(ko, oid,
+	st = sss_se05x_key_object_allocate_handle(k_object, oid,
 						  kSSS_KeyPart_Public,
 						  kSSS_CipherType_RSA, 0,
 						  kKeyObject_Mode_Transient);
@@ -100,8 +95,8 @@ static TEE_Result se050_inject_public_key(sss_se05x_object_t *ko,
 
 	set_binary_data(key->e, &key_bin.e, &key_bin.e_len);
 	set_binary_data(key->n, &key_bin.n, &key_bin.n_len);
-	st = se050_key_store_set_rsa_key_bin(se050_kstore, ko, NULL, &key_bin,
-					     key_bin.n_len * 8);
+	st = se050_key_store_set_rsa_key_bin(se050_kstore, k_object, NULL,
+					     &key_bin, key_bin.n_len * 8);
 	if (key_bin.n)
 		free(key_bin.n);
 
@@ -114,7 +109,7 @@ static TEE_Result se050_inject_public_key(sss_se05x_object_t *ko,
 	return TEE_SUCCESS;
 }
 
-static TEE_Result se050_inject_keypair(sss_se05x_object_t *ko,
+static TEE_Result se050_inject_keypair(sss_se05x_object_t *k_object,
 				       struct rsa_keypair *key)
 {
 	sss_status_t st = kStatus_SSS_Fail;
@@ -122,13 +117,13 @@ static TEE_Result se050_inject_keypair(sss_se05x_object_t *ko,
 	uint32_t key_id;
 	uint32_t oid;
 
-	st = sss_se05x_key_object_init(ko, se050_kstore);
+	st = sss_se05x_key_object_init(k_object, se050_kstore);
 	if (st != kStatus_SSS_Success)
 		return TEE_ERROR_BAD_PARAMETERS;
 
 	key_id = se050_rsa_keypair_from_nvm(key);
 	if (key_id) {
-		st = sss_se05x_key_object_get_handle(ko, key_id);
+		st = sss_se05x_key_object_get_handle(k_object, key_id);
 		if (st != kStatus_SSS_Success) {
 			EMSG("rsa");
 			return TEE_ERROR_BAD_PARAMETERS;
@@ -140,7 +135,8 @@ static TEE_Result se050_inject_keypair(sss_se05x_object_t *ko,
 	if (st != kStatus_SSS_Success)
 		return TEE_ERROR_GENERIC;
 
-	st = sss_se05x_key_object_allocate_handle(ko, oid, kSSS_KeyPart_Pair,
+	st = sss_se05x_key_object_allocate_handle(k_object, oid,
+						  kSSS_KeyPart_Pair,
 						  kSSS_CipherType_RSA, 0,
 						  kKeyObject_Mode_Transient);
 	if (st != kStatus_SSS_Success)
@@ -154,7 +150,8 @@ static TEE_Result se050_inject_keypair(sss_se05x_object_t *ko,
 	set_binary_data(key->qp, &key_bin.qp, &key_bin.qp_len);
 	set_binary_data(key->dp, &key_bin.dp, &key_bin.dp_len);
 	set_binary_data(key->dq, &key_bin.dq, &key_bin.dq_len);
-	st = se050_key_store_set_rsa_key_bin(se050_kstore, ko, &key_bin, NULL,
+	st = se050_key_store_set_rsa_key_bin(se050_kstore, k_object,
+					     &key_bin, NULL,
 					     crypto_bignum_num_bytes(key->n)
 					     * 8);
 	if (key_bin.e)
@@ -183,7 +180,7 @@ static TEE_Result se050_inject_keypair(sss_se05x_object_t *ko,
 TEE_Result crypto_acipher_gen_rsa_key(struct rsa_keypair *key, size_t kb)
 {
 	sss_status_t st = kStatus_SSS_Fail;
-	sss_se05x_object_t ko = { 0 };
+	sss_se05x_object_t k_object = { 0 };
 	TEE_Result ret = TEE_SUCCESS;
 	uint32_t oid = 0;
 	uint64_t kid = 0;
@@ -192,7 +189,7 @@ TEE_Result crypto_acipher_gen_rsa_key(struct rsa_keypair *key, size_t kb)
 	uint8_t *e = NULL;
 	size_t n_len = 0, e_len = 0, k_len = sizeof(k);
 
-	st = sss_se05x_key_object_init(&ko, se050_kstore);
+	st = sss_se05x_key_object_init(&k_object, se050_kstore);
 	if (st != kStatus_SSS_Success)
 		return TEE_ERROR_BAD_PARAMETERS;
 
@@ -200,17 +197,20 @@ TEE_Result crypto_acipher_gen_rsa_key(struct rsa_keypair *key, size_t kb)
 	if (st != kStatus_SSS_Success)
 		return TEE_ERROR_GENERIC;
 
-	st = sss_se05x_key_object_allocate_handle(&ko, oid, kSSS_KeyPart_Pair,
+	st = sss_se05x_key_object_allocate_handle(&k_object, oid,
+						  kSSS_KeyPart_Pair,
 						  kSSS_CipherType_RSA, 0,
 						  kKeyObject_Mode_Persistent);
 	if (st != kStatus_SSS_Success)
 		return TEE_ERROR_BAD_PARAMETERS;
 
-	st = sss_se05x_key_store_generate_key(se050_kstore, &ko, kb, NULL);
+	st = sss_se05x_key_store_generate_key(se050_kstore, &k_object, kb,
+					      NULL);
 	if (st != kStatus_SSS_Success)
 		return TEE_ERROR_BAD_PARAMETERS;
 
-	st = sss_se05x_key_store_get_key(se050_kstore, &ko, k, &k_len, &kb);
+	st = sss_se05x_key_store_get_key(se050_kstore, &k_object, k, &k_len,
+					 &kb);
 	if (st != kStatus_SSS_Success) {
 		ret = TEE_ERROR_BAD_PARAMETERS;
 		goto exit;
@@ -245,7 +245,7 @@ TEE_Result crypto_acipher_gen_rsa_key(struct rsa_keypair *key, size_t kb)
 exit:
 	if (ret != TEE_SUCCESS) {
 		IMSG("rsa key generation failed");
-		sss_se05x_key_store_erase_key(se050_kstore, &ko);
+		sss_se05x_key_store_erase_key(se050_kstore, &k_object);
 	}
 
 	return TEE_SUCCESS;

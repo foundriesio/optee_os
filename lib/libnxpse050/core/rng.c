@@ -4,15 +4,10 @@
  * Author: Jorge Ramirez <jorge@foundries.io>
  */
 
-#include <atomic.h>
 #include <crypto/crypto.h>
 #include <kernel/panic.h>
-#include <mm/core_memprot.h>
 #include <rng_support.h>
-#include <tee/cache.h>
-#include <tee/tee_cryp_utl.h>
 #include <se050.h>
-#include <string.h>
 
 static TEE_Result do_rng_read(void *buf, size_t blen)
 {

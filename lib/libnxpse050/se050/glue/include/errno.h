@@ -4,7 +4,7 @@
  * Author: Jorge Ramirez <jorge@foundries.io>
  */
 
-#ifndef _ERRNO_H
-#define _ERRNO_H
+#ifndef ERRNO_H
+#define ERRNO_H
 /* not sure how to create an empty file via sub.mk */
-#endif
+#endif /* ERRNO_H */

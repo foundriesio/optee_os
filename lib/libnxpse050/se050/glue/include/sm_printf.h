@@ -7,4 +7,4 @@
 #ifndef SM_PRINTF_H
 #define SM_PRINTF_H
 /* not sure how to create an empty file via sub.mk */
-#endif
+#endif /* SM_PRINTF_H */

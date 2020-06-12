@@ -4,17 +4,8 @@
  * Author: Jorge Ramirez <jorge@foundries.io>
  */
 
-#include <atomic.h>
-#include <crypto/crypto.h>
 #include <initcall.h>
-#include <kernel/panic.h>
-#include <mm/core_memprot.h>
-#include <rng_support.h>
-#include <tee/cache.h>
-#include <tee/tee_cryp_utl.h>
 #include <se050.h>
-#include <se050_key.h>
-#include <string.h>
 
 sss_se05x_key_store_t		*se050_kstore;
 sss_se05x_session_t		*se050_session;

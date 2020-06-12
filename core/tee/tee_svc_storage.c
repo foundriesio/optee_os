@@ -20,7 +20,8 @@
 #include <trace.h>
 
 #if defined(CFG_NXP_SE05X_SVC)
-#include "se050_key_crypto.h"
+/* this is a hack, should be a generic crypto api accessible via storage */
+extern void se050_delete_persistent_key(unsigned char *data, size_t len);
 #endif
 
 const struct tee_file_operations *tee_svc_storage_file_ops(uint32_t storage_id)

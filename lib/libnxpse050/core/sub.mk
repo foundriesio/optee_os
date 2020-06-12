@@ -1,6 +1,3 @@
-cflags-y += -Wno-unused-parameter
-cflags-y += -Wstrict-aliasing
-cflags-y += --warn-cast-align
 cflags-y += -Wno-error
 
 cflags-y += -DAX_EMBEDDED=1
@@ -9,19 +6,18 @@ cflags-y += -DT1oI2C_UM1225_SE050
 cflags-y += -DT1oI2C
 cflags-y += -DSSS_USE_FTR_FILE
 
-incdirs-y += ../include/
-incdirs-y += ../simw-top-adaptor/
-incdirs-y += ../simw-top/hostlib/hostLib/inc/
-incdirs-y += ../simw-top/hostlib/hostLib/libCommon/infra/
-incdirs-y += ../simw-top/hostlib/hostLib/libCommon/smCom/
-incdirs-y += ../simw-top/hostlib/hostLib/libCommon/smCom/T1oI2C/
-incdirs-y += ../simw-top/hostlib/hostLib/platform/inc/
-incdirs-y += ../simw-top/hostlib/hostLib/se05x_03_xx_xx/
-incdirs-y += ../simw-top/sss/ex/inc/
-incdirs-y += ../simw-top/sss/inc/
-incdirs-y += ../simw-top/sss/port/default/
+incdirs-y += ../adaptors/include
+incdirs-y += ../se050/glue/include
+incdirs-y += ../se050/simw-top/hostlib/hostLib/inc/
+incdirs-y += ../se050/simw-top/hostlib/hostLib/libCommon/infra/
+incdirs-y += ../se050/simw-top/hostlib/hostLib/libCommon/smCom/
+incdirs-y += ../se050/simw-top/hostlib/hostLib/libCommon/smCom/T1oI2C/
+incdirs-y += ../se050/simw-top/hostlib/hostLib/platform/inc/
+incdirs-y += ../se050/simw-top/hostlib/hostLib/se05x_03_xx_xx/
+incdirs-y += ../se050/simw-top/sss/ex/inc/
+incdirs-y += ../se050/simw-top/sss/inc/
+incdirs-y += ../se050/simw-top/sss/port/default/
 
-srcs-y += context.c key.c
 srcs-$(CFG_NXP_SE05X_HUK_DRV) += huk.c
 srcs-$(CFG_NXP_SE05X_RNG_DRV) += rng.c
 # Disabled not to slow down loading a TA (this operation over i2c is really

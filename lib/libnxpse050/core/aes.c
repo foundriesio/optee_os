@@ -6,10 +6,8 @@
 
 #include <crypto/crypto.h>
 #include <kernel/panic.h>
-#include <string.h>
-#include <trace.h>
-#include <se050_key.h>
 #include <se050.h>
+#include <string.h>
 
 TEE_Result crypto_aes_expand_enc_key(const void *key, size_t key_len,
 				     void *enc_key, size_t enc_keylen,
@@ -18,7 +16,7 @@ TEE_Result crypto_aes_expand_enc_key(const void *key, size_t key_len,
 	EMSG("**************************");
 	EMSG("*    AES EXPAND (ERROR!) *");
 	EMSG("**************************");
-	return TEE_SUCCESS;
+	return TEE_ERROR_GENERIC;
 }
 
 void crypto_aes_enc_block(const void *enc_key, size_t enc_keylen,
@@ -29,8 +27,6 @@ void crypto_aes_enc_block(const void *enc_key, size_t enc_keylen,
 	sss_status_t st = 0;
 	size_t dst_len = 16; /* as per mbedtls */
 	uint32_t oid = 0;
-
-	IMSG("%s", __func__);
 
 	st = sss_se05x_key_object_init(&key_obj, se050_kstore);
 	if (st != kStatus_SSS_Success)

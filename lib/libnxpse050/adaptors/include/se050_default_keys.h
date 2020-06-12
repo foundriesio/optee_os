@@ -4,8 +4,10 @@
  * Author: Jorge Ramirez <jorge@foundries.io>
  */
 
-#ifndef _SE05X_DEFAULT_KEYS_H_
-#define _SE05X_DEFAULT_KEYS_H_
+#ifndef SE05X_DEFAULT_KEYS_H_
+#define SE05X_DEFAULT_KEYS_H_
+
+#include <stdint.h>
 
 /* OF ID */
 #define SE050A1_ID 0xA204
@@ -24,7 +26,7 @@
 #define SE050C2 5
 #define SE050DV 6
 
-struct scp_key {
+static struct scp_key {
 	uint8_t enc[16];
 	uint8_t mac[16];
 	uint8_t dek[16];
@@ -87,4 +89,4 @@ struct scp_key {
 	},
 };
 
-#endif /* _SE05X_DEFAULT_KEYS_H_ */
+#endif /* SE05X_DEFAULT_KEYS_H_ */

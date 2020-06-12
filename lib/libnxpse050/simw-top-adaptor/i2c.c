@@ -6,7 +6,6 @@
 
 #include <drivers/imx_i2c.h>
 #include <initcall.h>
-#include <kernel/delay.h>
 #include <kernel/tee_i2c.h>
 #include <phEseStatus.h>
 #include <phNxpEsePal_i2c.h>
@@ -15,11 +14,11 @@
 #include <string.h>
 #include <trace.h>
 
-TEE_Result (*transfer)(struct TEE_I2CRequest *req, size_t *bytes);
+static TEE_Result (*transfer)(struct TEE_I2CRequest *req, size_t *bytes);
 
 static TEE_Result native_i2c_transfer(struct TEE_I2CRequest *req, size_t *bytes)
 {
-	TEE_Result ret;
+	TEE_Result ret = TEE_ERROR_GENERIC;
 
 	if (req->mode == TEE_MODE_READ)
 		ret = imx_i2c_read(req->bus, req->chip, req->buffer,
@@ -55,8 +54,6 @@ static int i2c_transfer(uint8_t *buffer, int len, enum TEE_I2CMode mode)
 
 void phPalEse_i2c_close(void *handle)
 {
-	if (handle)
-		handle = NULL;
 }
 
 int phPalEse_i2c_read(void *foo, uint8_t *buffer, int len)
@@ -73,12 +70,10 @@ ESESTATUS phPalEse_i2c_open_and_configure(pphPalEse_Config_t pConfig)
 {
 	TEE_Result ret = TEE_ERROR_GENERIC;
 
-	pConfig->pDevHandle = (void *)((intptr_t)0xBEEF);
-	pConfig->dwBaudRate = 3400000;
-
+	/* start with the native OP-TEE driver */
 	transfer = &native_i2c_transfer;
 
-	ret = imx_i2c_init(CFG_CORE_SE05X_I2C_BUS, pConfig->dwBaudRate);
+	ret = imx_i2c_init(CFG_CORE_SE05X_I2C_BUS, CFG_CORE_SE05X_BAUDRATE);
 	if (ret != TEE_SUCCESS)
 		return ESESTATUS_INVALID_DEVICE;
 
@@ -91,6 +86,7 @@ ESESTATUS phPalEse_i2c_open_and_configure(pphPalEse_Config_t pConfig)
 
 static TEE_Result load_trampoline(void)
 {
+	/* switch to the trampoline driver on OP-TEE boot done */
 	transfer = &tee_i2c_transfer;
 }
 

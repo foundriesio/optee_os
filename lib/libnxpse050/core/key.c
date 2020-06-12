@@ -5,93 +5,46 @@
  */
 
 #include <crypto/crypto.h>
-#include <tee/tee_cryp_utl.h>
-#include <utee_defines.h>
-#include <se050.h>
-#include <string.h>
-#include <trace.h>
-
 #include <rng_support.h>
 #include <se050.h>
 #include <se050_key_crypto.h>
 #include <se050_key.h>
+#include <string.h>
+#include <tee/tee_cryp_utl.h>
+#include <trace.h>
+#include <utee_defines.h>
 
 /* base value for secure objects (transient and persistent) */
-#define OID			((uint32_t)(0x60000000))
-
-/* allow for 0xFE persistent keys */
-#define OID_PERSISTENT_MAX	((uint32_t)(OID + 0xFF))
-#define OID_PERSISTENT_MIN	((uint32_t)(OID + 1))
-
-#define NBR_PERSISTENT		\
-((uint32_t)(OID_PERSISTENT_MAX - OID_PERSISTENT_MIN))
-
-/* transient keys */
-#define OID_TRANSIENT_MAX	((uint32_t)(OID + 0x0FFFFFFF))
-#define OID_TRANSIENT_MIN	((uint32_t)(OID_PERSISTENT_MAX + 1))
-
-#define NBR_TRANSIENT		\
-((uint32_t)(OID_TRANSIENT_MAX - OID_TRANSIENT_MIN))
+#define OID_MIN			((uint32_t)(0x00000001))
+#define OID_MAX			((uint32_t)(OID_MIN + 0x7BFFFFFE))
+#define NBR_OID			((uint32_t)(OID_MAX - OID_MIN))
 
 /* watermark keys to support SKS search */
 #define WATERMARK		0xDEADBEEF
 #define WATERMARKED(x)		((uint64_t)(((uint64_t)WATERMARK) << 32) + (x))
-#define IS_OID(x)		((((x) | OID) & 0xFFFFFF00) == OID)
-#define IS_WATERMARKED(x)	(((x) & WATERMARKED(OID)) == WATERMARKED(OID))
+#define IS_WATERMARKED(x)	(((x) & WATERMARKED(0)) == WATERMARKED(0))
 
-/*
- * persistent object ids are scattered in their range; this is to minimize the
- * range of retries when requesting one
- */
-static uint32_t se050_get_persistent_oid(void)
+static uint32_t generate_oid(void)
 {
-	uint32_t oid = OID_PERSISTENT_MIN;
-	uint32_t ret = 0;
+	uint32_t oid = OID_MIN;
+	uint32_t random = 0;
 	int i = 0;
 
-	for (i = 0; i < NBR_PERSISTENT; i++) {
-		oid = OID_PERSISTENT_MIN + hw_get_random_byte();
+	for (i = 0; i < NBR_OID; i++) {
+		if (crypto_rng_read(&random, sizeof(random)) != TEE_SUCCESS)
+			return 0;
 
-		if (oid > OID_PERSISTENT_MAX)
-			oid = OID_PERSISTENT_MIN;
+		random &= OID_MAX;
 
-		ret = se050_key_exists(oid, &se050_session->s_ctx);
-		if (!ret)
+		oid = OID_MIN + random;
+		if (oid > OID_MAX)
+			continue;
+
+		if (!se050_key_exists(oid, &se050_session->s_ctx))
 			return oid;
-
-		DMSG("persistent object in use %d", oid_persistent);
 	}
 
 	return 0;
-}
-
-/*
- * transient object ids are allocated sequentially in their range
- */
-static uint32_t se050_get_transient_oid(void)
-{
-	static uint32_t oid_transient = OID_TRANSIENT_MIN;
-	uint32_t oid = 0, ret = 0;
-	int i = 0;
-
-	for (i = 0; i < NBR_TRANSIENT; i++) {
-		if (oid_transient > OID_TRANSIENT_MAX)
-			oid_transient = OID_TRANSIENT_MIN;
-
-		ret = se050_key_exists(oid_transient, &se050_session->s_ctx);
-		if (!ret) {
-			oid = oid_transient;
-			break;
-		}
-
-		DMSG("transient object in use %d", oid_transient);
-		oid_transient += 1;
-	}
-
-	if (oid)
-		oid_transient += 1;
-
-	return oid;
 }
 
 sss_status_t se050_get_oid(sss_key_object_mode_t type, uint32_t *val)
@@ -99,6 +52,9 @@ sss_status_t se050_get_oid(sss_key_object_mode_t type, uint32_t *val)
 	sss_status_t status = kStatus_SSS_Success;
 	uint16_t pmem = 0, tmem = 0;
 	uint32_t oid = 0;
+
+	if (!val)
+		return kStatus_SSS_Fail;
 
 	status = se050_get_freemem(&se050_session->s_ctx, &pmem, &tmem);
 	if (status != kStatus_SSS_Success) {
@@ -111,55 +67,66 @@ sss_status_t se050_get_oid(sss_key_object_mode_t type, uint32_t *val)
 	if (type == kKeyObject_Mode_Transient) {
 		if (tmem && tmem < 100)
 			IMSG("WARNING, low transient memory");
-
-		oid = se050_get_transient_oid();
-		if (!oid)
-			return kStatus_SSS_Fail;
-
-		*val = oid;
 	} else {
 		if (pmem && pmem < 100)
 			IMSG("WARNING, low permanent memory");
-
-		oid = se050_get_persistent_oid();
-		if (!oid)
-			return kStatus_SSS_Fail;
-
-		IMSG("allocated persistent object: 0x%x", oid);
-		*val = oid;
 	}
 
+	oid = generate_oid();
+	if (!oid) {
+		EMSG("allocation error");
+		return kStatus_SSS_Fail;
+	}
+
+	if (type == kKeyObject_Mode_Persistent)
+		IMSG("allocated persistent object: 0x%x", oid);
+
+	*val = oid;
+
 	return kStatus_SSS_Success;
+}
+
+static uint32_t se050_key(uint64_t key)
+{
+	uint32_t oid = (uint32_t)key;
+
+	if (!IS_WATERMARKED(key))
+		return 0;
+
+	if (oid < OID_MIN || oid > OID_MAX)
+		return 0;
+
+	return oid;
 }
 
 uint32_t se050_rsa_keypair_from_nvm(struct rsa_keypair *key)
 {
 	uint64_t key_id = 0;
 
+	if (!key)
+		return 0;
+
 	if (crypto_bignum_num_bytes(key->d) != sizeof(uint64_t))
 		return 0;
 
 	crypto_bignum_bn2bin(key->d, (uint8_t *)&key_id);
 
-	if (IS_WATERMARKED(key_id) && IS_OID((uint32_t)key_id))
-		return (uint32_t)key_id;
-
-	return 0;
+	return se050_key(key_id);
 }
 
 uint32_t se050_ecc_keypair_from_nvm(struct ecc_keypair *key)
 {
 	uint64_t key_id = 0;
 
+	if (!key)
+		return 0;
+
 	if (crypto_bignum_num_bytes(key->d) != sizeof(uint64_t))
 		return 0;
 
 	crypto_bignum_bn2bin(key->d, (uint8_t *)&key_id);
 
-	if (IS_WATERMARKED(key_id) && IS_OID((uint32_t)key_id))
-		return (uint32_t)key_id;
-
-	return 0;
+	return se050_key(key_id);
 }
 
 /*
@@ -174,6 +141,11 @@ void se050_delete_persistent_key(uint8_t *data, size_t len)
 	sss_status_t status;
 	uint8_t *p = data;
 	bool found = false;
+
+	if (!p) {
+		EMSG("invalid buffer");
+		return;
+	}
 
 	/*
 	 * persistent keys were watermarked so they could be found in the buffer
@@ -216,8 +188,5 @@ void se050_delete_persistent_key(uint8_t *data, size_t len)
 
 uint64_t se050_generate_private_key(uint32_t oid)
 {
-	if (oid < OID_PERSISTENT_MIN && oid > OID_PERSISTENT_MAX)
-		return 0;
-
 	return WATERMARKED(oid);
 }

@@ -428,9 +428,73 @@ TEE_Result crypto_acipher_gen_ecc_key(struct ecc_keypair *key)
 	ret = TEE_SUCCESS;
 exit:
 	if (ret != TEE_SUCCESS) {
-		IMSG("ecc key generation failed");
+		EMSG("ecc key generation failed");
 		sss_se05x_key_store_erase_key(se050_kstore, &k_object);
 	}
 
 	return ret;
+}
+
+/* the public key in the keypair must match the public key passed in the
+ * parameter section
+ */
+TEE_Result crypto_acipher_ecc_shared_secret(struct ecc_keypair *private_key,
+					    struct ecc_public_key *public_key,
+					    void *secret,
+					    unsigned long *secret_len)
+{
+	struct ecc_public_key_bin key = { 0 };
+	sss_status_t st = kStatus_SSS_Fail;
+	TEE_Result ret = TEE_SUCCESS;
+	size_t key_bits = 0, key_bytes = 0;
+	size_t x_len = 0, y_len = 0;
+	uint32_t kid = 0;
+
+	/* Check the curves are the same (pair public and public key must be
+	 * the same as well; there is a problem in SKS where the key passed
+	 * in the public_key variable is shifted one byte to the right and
+	 * therefore they wont match -because of this, we use the public key
+	 * from the keypair which we know must be valid.
+	 */
+	if (private_key->curve != public_key->curve)
+		return TEE_ERROR_BAD_PARAMETERS;
+
+	kid = se050_ecc_keypair_from_nvm(private_key);
+	if (!kid) {
+		EMSG("private key must be in SE050 memory");
+		return TEE_ERROR_BAD_PARAMETERS;
+	}
+
+	x_len = crypto_bignum_num_bytes(private_key->x);
+	y_len = crypto_bignum_num_bytes(private_key->y);
+	ret = ecc_get_key_size(private_key->curve, 0, &key_bytes, &key_bits);
+	if (ret != TEE_SUCCESS)
+		return ret;
+
+	if (x_len != y_len || x_len != key_bytes)
+		return TEE_ERROR_BAD_PARAMETERS;
+
+	ret = set_binary_data(private_key->x, x_len, &key.x, &key.x_len);
+	if (ret != TEE_SUCCESS)
+		return ret;
+
+	ret = set_binary_data(private_key->y, y_len, &key.y, &key.y_len);
+	if (ret != TEE_SUCCESS) {
+		free(key.x);
+		return ret;
+	}
+
+	st = se050_ecc_gen_shared_secret(se050_session, kid, &key,
+					 secret, secret_len);
+	free(key.x);
+	free(key.y);
+
+	if (st != kStatus_SSS_Success) {
+		EMSG("failed to generate secret");
+		nLog_au8("ecc: ", 0xff, "pair public x: ", key.x, key.x_len);
+		nLog_au8("ecc: ", 0xff, "pair public y: ", key.y, key.y_len);
+		return TEE_ERROR_BAD_PARAMETERS;
+	}
+
+	return TEE_SUCCESS;
 }

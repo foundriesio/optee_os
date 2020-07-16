@@ -18,6 +18,7 @@ incdirs-y += ../se050/simw-top/sss/ex/inc/
 incdirs-y += ../se050/simw-top/sss/inc/
 incdirs-y += ../se050/simw-top/sss/port/default/
 
+srcs-y += scp03.c
 srcs-$(CFG_NXP_SE05X_HUK_DRV) += huk.c
 srcs-$(CFG_NXP_SE05X_RNG_DRV) += rng.c
 # Disabled not to slow down loading a TA (this operation over i2c is really

@@ -320,6 +320,10 @@ void TEE_DeriveKey(TEE_OperationHandle operation,
 
 void TEE_GenerateRandom(void *randomBuffer, uint32_t randomBufferLen);
 
+/* Cryptographic Operations API - Enable GP SCP03 */
+
+void TEE_EnableScp03(uint32_t rotate_keys);
+
 /* Date & Time API */
 
 void TEE_GetSystemTime(TEE_Time *time);

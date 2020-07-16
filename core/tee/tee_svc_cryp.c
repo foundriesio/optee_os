@@ -2944,6 +2944,18 @@ TEE_Result syscall_cryp_random_number_generate(void *buf, size_t blen)
 	return res;
 }
 
+TEE_Result syscall_cryp_enable_scp03(uint32_t rotate_keys)
+{
+	TEE_Result res = TEE_SUCCESS;
+	struct tee_ta_session *sess = NULL;
+
+	res = tee_ta_get_current_session(&sess);
+	if (res != TEE_SUCCESS)
+		return res;
+
+	return crypto_enable_scp03(rotate_keys);
+}
+
 TEE_Result syscall_authenc_init(unsigned long state, const void *nonce,
 			size_t nonce_len, size_t tag_len,
 			size_t aad_len, size_t payload_len)

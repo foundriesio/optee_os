@@ -14,6 +14,8 @@ else
 srcs-y += rng_hw.c
 endif
 
+srcs-y += scp03.c
+
 ifneq ($(CFG_CRYPTO_CBC_MAC_FROM_CRYPTOLIB),y)
 srcs-$(CFG_CRYPTO_CBC_MAC) += cbc-mac.c
 endif

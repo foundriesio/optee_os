@@ -21,7 +21,7 @@
         UTEE_SYSCALL utee_close_ta_session, TEE_SCN_CLOSE_TA_SESSION, 1
 
         UTEE_SYSCALL utee_invoke_ta_command, TEE_SCN_INVOKE_TA_COMMAND, 5
-        
+
         UTEE_SYSCALL utee_get_cancellation_flag, \
                      TEE_SCN_GET_CANCELLATION_FLAG, 1
 
@@ -76,6 +76,8 @@
 
         UTEE_SYSCALL utee_cryp_random_number_generate, \
                      TEE_SCN_CRYP_RANDOM_NUMBER_GENERATE, 2
+
+        UTEE_SYSCALL utee_cryp_enable_scp03, TEE_SCN_CRYP_ENABLE_SCP03, 1
 
         UTEE_SYSCALL utee_authenc_init, TEE_SCN_AUTHENC_INIT, 6
 

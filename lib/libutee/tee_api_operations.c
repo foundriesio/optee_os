@@ -1811,3 +1811,13 @@ int rand(void)
 	 */
 	return rc & RAND_MAX;
 }
+
+void TEE_EnableScp03(uint32_t rotate_keys)
+{
+	TEE_Result res;
+
+	res = utee_cryp_enable_scp03(rotate_keys);
+	if (res != TEE_SUCCESS)
+		TEE_Panic(res);
+}
+

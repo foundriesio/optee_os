@@ -117,6 +117,7 @@ static const struct syscall_entry tee_svc_syscall_table[] = {
 	SYSCALL_ENTRY(syscall_not_supported),
 	SYSCALL_ENTRY(syscall_not_supported),
 	SYSCALL_ENTRY(syscall_cache_operation),
+	SYSCALL_ENTRY(syscall_cryp_enable_scp03),
 };
 
 #ifdef TRACE_SYSCALLS

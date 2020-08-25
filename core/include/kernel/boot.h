@@ -60,6 +60,7 @@ void boot_init_secondary(unsigned long nsec_entry);
 
 void boot_primary_init_intc(void);
 void boot_secondary_init_intc(void);
+const char *main_get_optee_exclusive_node_name(unsigned int i);
 
 void init_sec_mon(unsigned long nsec_entry);
 void init_tee_runtime(void);

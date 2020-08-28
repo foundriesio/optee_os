@@ -66,4 +66,3 @@ srcs-y += simw-top/sss/src/user/fsl_sss_user_impl.c
 # sss/src/user/crypto
 srcs-y += simw-top/sss/src/user/crypto/aes.c
 srcs-y += simw-top/sss/src/user/crypto/aes_cmac.c
-srcs-y += simw-top/sss/src/user/crypto/aes_cmac_multistep.c

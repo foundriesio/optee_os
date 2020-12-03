@@ -30,6 +30,11 @@ comp-cflags-warns-clang := -Wno-language-extension-token \
 libgcc$(sm)	:= $(shell $(CC$(sm)) $(CFLAGS$(arch-bits-$(sm))) \
 			-rtlib=compiler-rt -print-libgcc-file-name 2> /dev/null)
 
+# ANDROID WORKAROUND
+# For some reasons the ligcc path returned is incorrect ...
+# lib/libclang_rt.builtins-aarch64-android.a -> lib/linux/libclang_rt.builtins-aarch64-android.a
+libgcc$(sm) := $(dir $(libgcc$(sm)))linux/$(notdir $(libgcc$(sm)))
+
 # Core ASLR relies on the executable being ready to run from its preferred load
 # address, because some symbols are used before the MMU is enabled and the
 # relocations are applied.

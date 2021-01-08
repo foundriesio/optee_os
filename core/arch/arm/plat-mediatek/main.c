@@ -17,9 +17,8 @@ register_phys_mem_pgdir(MEM_AREA_IO_NSEC,
 
 static struct serial8250_uart_data console_data;
 
-#if defined(PLATFORM_FLAVOR_mt8516)
-register_ddr(DRAM0_BASE, DRAM0_SIZE);
-register_ddr(DRAM1_BASE, DRAM1_SIZE);
+#ifdef DRAM_BASE
+register_ddr(DRAM_BASE, DRAM_SIZE);
 #endif
 
 #ifdef CFG_GIC

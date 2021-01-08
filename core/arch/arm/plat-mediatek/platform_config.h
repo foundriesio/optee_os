@@ -80,6 +80,9 @@
 #define CONSOLE_BAUDRATE	921600
 #define CONSOLE_UART_CLK_IN_HZ	26000000
 
+#define DRAM_BASE		(CFG_SHMEM_START + CFG_SHMEM_SIZE)
+#define DRAM_SIZE		(0xc0000000 - DRAM_BASE)
+
 #else
 #error "Unknown platform flavor"
 #endif

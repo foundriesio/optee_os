@@ -16,6 +16,8 @@ endif
 
 # default DRAM size 1 GiB
 CFG_DRAM_SIZE ?= 0x40000000
+# enable console by default
+CFG_UART_ENABLE ?= y
 
 ifeq ($(PLATFORM_FLAVOR),mt8173)
 # 2**1 = 2 cores per cluster

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: (BSD-2-Clause AND BSD-3-Clause)
 /*
  * Copyright (c) 2015-2016, 2022 Linaro Limited
+ * Copyright 2021 NXP
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -626,6 +627,14 @@ static void core_init_mmu_prtn_tee(struct mmu_partition *prtn,
 
 	/* Clear table before use */
 	memset(prtn->base_tables, 0, sizeof(base_xlation_table));
+#ifdef CFG_COCKPIT
+	/* Clear L2 table before use */
+	memset(prtn->xlat_tables, 0, XLAT_TABLES_SIZE);
+	/* Clear L2 table for TA before use */
+	memset(prtn->l2_ta_tables, 0, XLAT_TABLES_SIZE);
+	prtn->asid = 0;
+	prtn->xlat_tables_used = 0;
+#endif
 
 	for (n = 0; n < mem_map->count; n++)
 		if (!core_mmu_is_dynamic_vaspace(mem_map->map + n))

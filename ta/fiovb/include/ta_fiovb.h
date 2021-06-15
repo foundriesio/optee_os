@@ -10,7 +10,7 @@
 
 #define PERSIST_VALUE_LIST {"bootcount", "upgrade_available", "rollback", \
 			    "m4hash", "m4size", "bootupgrade_available", \
-			    "bootfirmware_version"}
+			    "bootfirmware_version", "m4_update"}
 
 /*
  * Reads a persistent value corresponding to the given name.

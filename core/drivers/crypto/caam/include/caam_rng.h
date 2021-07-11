@@ -13,6 +13,7 @@
  * @ctrl_addr   Controller base address
  */
 enum caam_status caam_rng_init(vaddr_t ctrl_addr);
+enum caam_status caam_rng_self_test(vaddr_t baseaddr);
 
 /* Instantiates the RNG State Handles if not already done */
 enum caam_status caam_rng_instantiation(void);

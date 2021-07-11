@@ -435,6 +435,15 @@ enum caam_status caam_rng_instantiation(void)
 		goto end_inst;
 	}
 
+#ifdef CFG_NXP_CAAM_REQUIRES_SELF_TEST
+	/* Run self-test to ensure correct init */
+	retstatus = caam_rng_self_test(rng_privdata->baseaddr);
+	if (retstatus != CAAM_NO_ERROR) {
+		retstatus = TEE_ERROR_GENERIC;
+		goto end_inst;
+	}
+#endif
+
 	/*
 	 * RNG needs to be instantiated. Allocate and prepare the
 	 * Job Descriptor

@@ -85,6 +85,7 @@ enum stm32mp1_parent_id {
  */
 enum stm32mp1_parent_sel {
 	_STGEN_SEL,
+	_I2C35_SEL,
 	_I2C46_SEL,
 	_SPI6_SEL,
 	_USART1_SEL,
@@ -353,6 +354,8 @@ static const struct stm32mp1_clk_gate stm32mp1_clk_gate[] = {
 	_CLK_FIXED(SEC, RCC_DDRITFCR, 9, DDRPHYCAPB, _PCLK4),
 	_CLK_FIXED(SEC, RCC_DDRITFCR, 10, DDRPHYCAPBLP, _PCLK4),
 
+	_CLK_SC2_SELEC(SEC, RCC_MP_APB1ENSETR, I2C5EN, I2C5_K, _I2C35_SEL),
+
 	_CLK_SC2_SELEC(SEC, RCC_MP_APB5ENSETR, SPI6EN, SPI6_K, _SPI6_SEL),
 	_CLK_SC2_SELEC(SEC, RCC_MP_APB5ENSETR, I2C4EN, I2C4_K, _I2C46_SEL),
 	_CLK_SC2_SELEC(SEC, RCC_MP_APB5ENSETR, I2C6EN, I2C6_K, _I2C46_SEL),
@@ -421,6 +424,10 @@ static const uint8_t stgen_parents[] = {
 	_HSI_KER, _HSE_KER
 };
 
+static const uint8_t i2c35_parents[] = {
+	_PCLK1, _PLL4_R, _HSI_KER, _CSI_KER
+};
+
 static const uint8_t i2c46_parents[] = {
 	_PCLK5, _PLL3_Q, _HSI_KER, _CSI_KER
 };
@@ -467,6 +474,7 @@ static const uint8_t rtc_parents[] = {
 static const struct stm32mp1_clk_sel stm32mp1_clk_sel[_PARENT_SEL_NB] = {
 	/* Secure aware clocks */
 	_CLK_PARENT(_STGEN_SEL, RCC_STGENCKSELR, 0, 0x3, stgen_parents),
+	_CLK_PARENT(_I2C35_SEL, RCC_I2C35CKSELR, 0, 0x7, i2c35_parents),
 	_CLK_PARENT(_I2C46_SEL, RCC_I2C46CKSELR, 0, 0x7, i2c46_parents),
 	_CLK_PARENT(_SPI6_SEL, RCC_SPI6CKSELR, 0, 0x7, spi6_parents),
 	_CLK_PARENT(_USART1_SEL, RCC_UART1CKSELR, 0, 0x7, usart1_parents),

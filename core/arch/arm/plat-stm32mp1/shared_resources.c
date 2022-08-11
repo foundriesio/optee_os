@@ -61,6 +61,7 @@ static uint8_t shres_state[STM32MP1_SHRES_COUNT] = {
 #endif
 #if !defined(CFG_STM32_I2C)
 	[STM32MP1_SHRES_I2C4] = SHRES_NON_SECURE,
+	[STM32MP1_SHRES_I2C5] = SHRES_NON_SECURE,
 	[STM32MP1_SHRES_I2C6] = SHRES_NON_SECURE,
 #endif
 #if !defined(CFG_STM32_GPIO)
@@ -100,6 +101,7 @@ static const char __maybe_unused *shres2str_id_tbl[STM32MP1_SHRES_COUNT] = {
 	[STM32MP1_SHRES_USART1] = "USART1",
 	[STM32MP1_SHRES_SPI6] = "SPI6",
 	[STM32MP1_SHRES_I2C4] = "I2C4",
+	[STM32MP1_SHRES_I2C5] = "I2C5",
 	[STM32MP1_SHRES_RNG1] = "RNG1",
 	[STM32MP1_SHRES_HASH1] = "HASH1",
 	[STM32MP1_SHRES_CRYP1] = "CRYP1",
@@ -228,6 +230,9 @@ static void register_periph(enum stm32mp_shres id, enum shres_state state)
 		case STM32MP1_SHRES_I2C4:
 			stm32mp_register_clock_parents_secure(I2C4_K);
 			break;
+		case STM32MP1_SHRES_I2C5:
+			stm32mp_register_clock_parents_secure(I2C5_K);
+			break;
 		case STM32MP1_SHRES_RNG1:
 			stm32mp_register_clock_parents_secure(RNG1_K);
 			break;
@@ -278,6 +283,9 @@ static void register_periph_iomem(vaddr_t base, enum shres_state state)
 		break;
 	case I2C4_BASE:
 		id = STM32MP1_SHRES_I2C4;
+		break;
+	case I2C5_BASE:
+		id = STM32MP1_SHRES_I2C5;
 		break;
 	case I2C6_BASE:
 		id = STM32MP1_SHRES_I2C6;
@@ -473,6 +481,9 @@ bool stm32mp_nsec_can_access_clock(unsigned long clock_id)
 	case I2C4_K:
 		shres_id = STM32MP1_SHRES_I2C4;
 		break;
+	case I2C5_K:
+		shres_id = STM32MP1_SHRES_I2C5;
+		break;
 	case I2C6_K:
 		shres_id = STM32MP1_SHRES_I2C6;
 		break;
@@ -516,6 +527,9 @@ bool stm32mp_nsec_can_access_reset(unsigned int reset_id)
 		break;
 	case I2C4_R:
 		shres_id = STM32MP1_SHRES_I2C4;
+		break;
+	case I2C5_R:
+		shres_id = STM32MP1_SHRES_I2C5;
 		break;
 	case I2C6_R:
 		shres_id = STM32MP1_SHRES_I2C6;
@@ -596,6 +610,8 @@ static void set_etzpc_secure_configuration(void)
 			    shres2decprot_attr(STM32MP1_SHRES_SPI6));
 	config_lock_decprot(STM32MP1_ETZPC_I2C4_ID,
 			    shres2decprot_attr(STM32MP1_SHRES_I2C4));
+	config_lock_decprot(STM32MP1_ETZPC_I2C5_ID,
+			    shres2decprot_attr(STM32MP1_SHRES_I2C5));
 	config_lock_decprot(STM32MP1_ETZPC_RNG1_ID,
 			    shres2decprot_attr(STM32MP1_SHRES_RNG1));
 	config_lock_decprot(STM32MP1_ETZPC_HASH1_ID,

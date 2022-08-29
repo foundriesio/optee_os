@@ -163,6 +163,7 @@
 #define CR2_RESET_MASK			(I2C_CR2_SADD | I2C_CR2_HEAD10R | \
 					 I2C_CR2_NBYTES | I2C_CR2_RELOAD | \
 					 I2C_CR2_RD_WRN)
+#define I2C_TIMEOUT_RXNE_MS		5
 
 #define TIMINGR_CLEAR_MASK		(I2C_TIMINGR_SCLL | I2C_TIMINGR_SCLH | \
 					 I2C_TIMINGR_SDADEL | \
@@ -1347,7 +1348,8 @@ static int i2c_read(struct i2c_handle_s *hi2c, struct i2c_request *request,
 	}
 
 	do {
-		if (wait_isr_event(hi2c, I2C_ISR_RXNE, 1, timeout_ref))
+		if (wait_isr_event(hi2c, I2C_ISR_RXNE, 1,
+				   timeout_init_us(I2C_TIMEOUT_RXNE_MS * 1000)))
 			goto bail;
 
 		*p_buff = io_read8(base + I2C_RXDR);

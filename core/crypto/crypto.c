@@ -825,6 +825,7 @@ TEE_Result crypto_acipher_x25519_shared_secret(struct x25519_keypair
 }
 #endif
 
-__weak void crypto_storage_obj_del(uint8_t *data __unused, size_t len __unused)
+__weak TEE_Result crypto_storage_obj_del(struct tee_obj *obj __unused)
 {
+	return TEE_ERROR_NOT_IMPLEMENTED;
 }

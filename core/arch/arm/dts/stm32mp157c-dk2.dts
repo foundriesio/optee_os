@@ -19,6 +19,7 @@
 	aliases {
 		ethernet0 = &ethernet0;
 		serial0 = &uart4;
+		i2c5 = &i2c5;
 	};
 
 	chosen {
@@ -66,6 +67,9 @@
 	};
 };
 
+&i2c5 {
+	status = "okay";
+};
 &i2c1 {
 	touchscreen@38 {
 		compatible = "focaltech,ft6236";

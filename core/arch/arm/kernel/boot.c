@@ -1262,7 +1262,13 @@ static int add_descriptor_node(struct dt_descriptor *dt, const char *driver)
 	}
 
 	for (j = 0; j < i; j++) {
-		offs = fdt_add_subnode(dt->blob, offs, item[j]);
+		int parentoffs = offs;
+		offs = fdt_add_subnode(dt->blob, parentoffs, item[j]);
+		if (offs >= 0)
+			continue;
+		if (offs == -FDT_ERR_EXISTS)
+			offs = fdt_subnode_offset(dt->blob, parentoffs,
+						  item[j]);
 		if (offs < 0)
 			return -1;
 	}

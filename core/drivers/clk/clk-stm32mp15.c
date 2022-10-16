@@ -1524,7 +1524,7 @@ static TEE_Result stm32mp1_clock_provider_probe(const void *fdt, int offs,
 {
 	TEE_Result res = TEE_ERROR_GENERIC;
 
-	if (compat_data == &non_secure_rcc)
+	if (compat_data == &non_secure_rcc && !stm32mp_is_closed_device())
 		disable_rcc_tzen();
 	else
 		enable_rcc_tzen();

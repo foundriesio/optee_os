@@ -85,6 +85,10 @@ struct dt_descriptor {
 #endif
 };
 
+#ifdef CFG_OVERLAY_ADDR
+static bool cpu_psci_compat[CFG_TEE_CORE_NB_CORE];
+#endif
+
 static struct dt_descriptor external_dt __nex_bss;
 #endif
 
@@ -902,6 +906,8 @@ static int check_node_compat_prefix(struct dt_descriptor *dt, int offs,
 	return -1;
 }
 
+static int add_descriptor_node(struct dt_descriptor *dt, const char *driver);
+
 static int dt_add_psci_cpu_enable_methods(struct dt_descriptor *dt)
 {
 #define CPU_PATH_SIZE 20
@@ -915,14 +921,29 @@ static int dt_add_psci_cpu_enable_methods(struct dt_descriptor *dt)
 		if (ret < 0 || ret >= CPU_PATH_SIZE)
 			return -1;
 
-		noffset = fdt_path_offset(dt->blob, cpu_path);
-		if (noffset < 0)
-			continue;
+#ifdef CFG_OVERLAY_ADDR
+		if (!dt->is_overlay) {
+			cpu_psci_compat[cpu_idx] = false;
+#endif
+			noffset = fdt_path_offset(dt->blob, cpu_path);
+			if (noffset < 0)
+				continue;
 
-		if (check_node_compat_prefix(dt, noffset,
-					     "arm,cortex-a"))
-			continue; /* no compatible */
+			if (check_node_compat_prefix(dt, noffset,
+						     "arm,cortex-a"))
+				continue; /* no compatible */
+#ifdef CFG_OVERLAY_ADDR
+			else
+				cpu_psci_compat[cpu_idx] = true;
+		} else {
+			if (cpu_psci_compat[cpu_idx] == false)
+				continue;
 
+			noffset = add_descriptor_node(dt, cpu_path);
+			if (noffset < 0)
+				return -1;
+		}
+#endif
 		ret = fdt_setprop_string(dt->blob, noffset,
 					 "enable-method", "psci");
 		if (ret)
@@ -1552,6 +1573,11 @@ void __weak boot_init_primary_late(unsigned long fdt)
 	release_external_dt();
 	dt->is_overlay = 1;
 	init_external_dt(CFG_OVERLAY_ADDR);
+	/*
+	 * NOTE: call this function ONLY after calling it for u-boot
+	 * fdt. The 1st call with u-boot fdt marks psci-compatible
+	 * cpus in a shared array cpu_psci_compat[].
+	 */
 	update_external_dt();
 	release_external_dt();
 #endif

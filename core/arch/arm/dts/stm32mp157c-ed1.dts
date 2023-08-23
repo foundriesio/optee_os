@@ -122,6 +122,7 @@
 	};
 	huk_otp: huk-otp@f0 {
 		reg = <0xf0 0x10>;
+		st,non-secure-otp-provisioning;
 	};
 };
 

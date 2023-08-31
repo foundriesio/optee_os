@@ -7,7 +7,7 @@
 #define __ELE_H_
 
 #include <drivers/imx_mu.h>
-#include <utils_mem.h>
+#include <drivers/ele/utils_mem.h>
 #include <tee_api_types.h>
 #include <trace.h>
 

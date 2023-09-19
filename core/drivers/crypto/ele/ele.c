@@ -231,12 +231,7 @@ static TEE_Result __maybe_unused imx_ele_sab_init(void)
 	return imx_ele_call(&msg);
 }
 
-/*
- * Open a session with EdgeLock Enclave. It returns a session handle.
- *
- * @session_handle EdgeLock Enclave session handle
- */
-static TEE_Result imx_ele_session_open(uint32_t *session_handle)
+TEE_Result imx_ele_session_open(uint32_t *session_handle)
 {
 	TEE_Result res = TEE_ERROR_GENERIC;
 	struct open_session_cmd {
@@ -280,12 +275,7 @@ static TEE_Result imx_ele_session_open(uint32_t *session_handle)
 	return TEE_SUCCESS;
 }
 
-/*
- * Close a session with EdgeLock Enclave.
- *
- * @session_handle EdgeLock Enclave session handle
- */
-static TEE_Result __maybe_unused imx_ele_session_close(uint32_t session_handle)
+TEE_Result imx_ele_session_close(uint32_t session_handle)
 {
 	struct close_session_cmd {
 		uint32_t session_handle;

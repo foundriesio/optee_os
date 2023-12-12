@@ -20,14 +20,12 @@
 #include <types_ext.h>
 #include <utee_types.h>
 #include <util.h>
+#include <utils_trace.h>
 
 #define ELE_BASE_ADDR MU_BASE
 #define ELE_BASE_SIZE MU_SIZE
 
-#define ELE_VERSION_BASELINE 0x06
 #define ELE_COMMAND_SUCCEED 0xd6
-#define ELE_COMMAND_FAILED  0x29
-#define ELE_RESPONSE_TAG    0xe1
 
 #define ELE_CMD_SESSION_OPEN	    0x10
 #define ELE_CMD_SESSION_CLOSE	    0x11
@@ -35,24 +33,15 @@
 #define ELE_CMD_TRNG_STATE	    0xA4
 #define ELE_CMD_GET_INFO	    0xDA
 #define ELE_CMD_DERIVE_KEY	    0xA9
+#define ELE_CMD_SAB_INIT 0x17
 
 #define IMX_ELE_TRNG_STATUS_READY 0x3
 
-#define ELE_MU_ID  0x2
 #define ELE_MU_IRQ 0x0
 
-#if defined(CFG_MX8ULP)
-#define ELE_MU_DID 0x7
 #define CACHELINE_SIZE 64
-#elif defined(CFG_MX93)
-#define ELE_MU_DID 0x3
-#define CACHELINE_SIZE 64
-#else
-#error "Platform DID is not defined"
-#endif
 
 register_phys_mem_pgdir(MEM_AREA_IO_SEC, MU_BASE, MU_SIZE);
-register_phys_mem_pgdir(MEM_AREA_IO_NSEC, MU_BASE, MU_SIZE);
 
 struct get_info_rsp {
 	uint32_t rsp_code;
@@ -70,53 +59,6 @@ struct get_info_rsp {
 	uint8_t imem_state;
 	uint8_t unused_2;
 } __packed;
-
-struct response_code {
-	uint8_t status;
-	uint8_t rating;
-	uint16_t rating_extension;
-} __packed;
-
-/* True if the ELE initialization is done */
-static bool optee_init_finish;
-
-/*
- * Print ELE response status and rating
- *
- * @rsp response code structure
- */
-static void print_rsp_code(const struct response_code rsp __maybe_unused)
-{
-	DMSG("Response status %#"PRIx8", rating %#"PRIx8" (ext %#"PRIx16")",
-	     rsp.status, rsp.rating, rsp.rating_extension);
-}
-
-/*
- * Print ELE message header
- *
- * @hdr message header
- */
-static void print_msg_header(struct imx_mu_msg_header hdr __maybe_unused)
-{
-	DMSG("Header ver %#"PRIx8", size %"PRId8", tag %#"PRIx8", cmd %#"PRIx8,
-	     hdr.version, hdr.size, hdr.tag, hdr.command);
-}
-
-/*
- * Print full ELE message content
- *
- * @msg message
- */
-static void dump_message(const struct imx_mu_msg *msg __maybe_unused)
-{
-	size_t i = 0;
-	size_t size __maybe_unused = msg->header.size;
-	uint32_t *data __maybe_unused = (uint32_t *)msg;
-
-	DMSG("Dump of message %p(%zu)", data, size);
-	for (i = 0; i < size; i++)
-		DMSG("word %zu: %#"PRIx32, i, data[i]);
-}
 
 /*
  * The CRC for the message is computed xor-ing all the words of the message:
@@ -157,19 +99,14 @@ void update_crc(struct imx_mu_msg *msg)
 static vaddr_t imx_ele_init(paddr_t pa, size_t sz)
 {
 	static bool is_initialized;
-	enum teecore_memtypes mtype = MEM_AREA_IO_SEC;
 	vaddr_t va = 0;
 
 	assert(pa && sz);
 
-	if (cpu_mmu_enabled()) {
-		if (optee_init_finish)
-			mtype = MEM_AREA_IO_NSEC;
-
-		va = core_mmu_get_va(pa, mtype, sz);
-	} else {
+	if (cpu_mmu_enabled())
+		va = core_mmu_get_va(pa, MEM_AREA_IO_SEC, sz);
+	else
 		va = (vaddr_t)pa;
-	}
 
 	if (!is_initialized) {
 		imx_mu_init(va);
@@ -179,28 +116,7 @@ static vaddr_t imx_ele_init(paddr_t pa, size_t sz)
 	return va;
 }
 
-/*
- * This function is used to set the optee_init_finish which will signal that
- * OP-TEE initialization is done.
- * During initialization we need the MU memory mapping in MMU as Secure and
- * after initialization we need MU memory mapping in MMU as Non-Secure.
- * So will check optee_init_finish flag in the first MU call after
- * initialization, and based on its value, will change the memory mapping.
- */
-static TEE_Result imx_ele_set_init_flag(void)
-{
-	optee_init_finish = true;
-
-	return TEE_SUCCESS;
-}
-boot_final(imx_ele_set_init_flag);
-
-/*
- * Extract response codes from the given word
- *
- * @word 32 bits word MU response
- */
-static struct response_code get_response_code(uint32_t word)
+struct response_code get_response_code(uint32_t word)
 {
 	struct response_code rsp = {
 		.rating_extension = (word & GENMASK_32(31, 16)) >> 16,
@@ -214,7 +130,6 @@ static struct response_code get_response_code(uint32_t word)
 TEE_Result imx_ele_call(struct imx_mu_msg *msg)
 {
 	TEE_Result res = TEE_ERROR_GENERIC;
-	struct response_code rsp = { };
 	vaddr_t va = 0;
 
 	assert(msg);
@@ -231,37 +146,42 @@ TEE_Result imx_ele_call(struct imx_mu_msg *msg)
 		return TEE_ERROR_GENERIC;
 	}
 
+	ele_trace_print_msg(*msg);
+
 	res = imx_mu_call(va, msg, true);
 	if (res) {
-		EMSG("Failed to transmit message: %#"PRIx32, res);
-		print_msg_header(msg->header);
-		dump_message(msg);
+		EMSG("Failed to transmit message: %#" PRIx32, res);
 		return res;
 	}
 
-	rsp = get_response_code(msg->data.u32[0]);
-
 	if (msg->header.tag != ELE_RESPONSE_TAG) {
-		EMSG("Response has invalid tag: %#"PRIx8" instead of %#"PRIx8,
+		EMSG("Response has invalid tag: %#" PRIx8
+		     " instead of %#" PRIx8,
 		     msg->header.tag, ELE_RESPONSE_TAG);
-		print_msg_header(msg->header);
 		return TEE_ERROR_GENERIC;
 	}
 
-	if (rsp.status != ELE_COMMAND_SUCCEED) {
-		EMSG("Command has failed");
-		print_rsp_code(rsp);
-		return TEE_ERROR_GENERIC;
-	}
+	ele_trace_print_msg(*msg);
 
-	/* The rating can be different in success and failing cases */
-	if (rsp.rating != 0) {
-		EMSG("Command has invalid rating: %#"PRIx8, rsp.rating);
-		print_rsp_code(rsp);
+	if (get_response_code(msg->data.u32[0]).status != ELE_COMMAND_SUCCEED)
 		return TEE_ERROR_GENERIC;
-	}
 
 	return TEE_SUCCESS;
+}
+
+/*
+ * Initialize EdgeLock Enclave services
+ */
+static TEE_Result __maybe_unused imx_ele_sab_init(void)
+{
+	struct imx_mu_msg msg = {
+		.header.version = ELE_VERSION_HSM,
+		.header.size = 1,
+		.header.tag = ELE_REQUEST_TAG,
+		.header.command = ELE_CMD_SAB_INIT,
+	};
+
+	return imx_ele_call(&msg);
 }
 
 /*
@@ -273,21 +193,19 @@ static TEE_Result imx_ele_session_open(uint32_t *session_handle)
 {
 	TEE_Result res = TEE_ERROR_GENERIC;
 	struct open_session_cmd {
-		uint8_t mu_id;
+		uint8_t rsvd1;
 		uint8_t interrupt_num;
-		uint8_t tz;
-		uint8_t did;
+		uint16_t rsvd2;
 		uint8_t priority;
 		uint8_t op_mode;
-		uint16_t reserved;
+		uint16_t rsvd3;
 	} __packed cmd = {
-		.mu_id = ELE_MU_ID,
+		.rsvd1 = 0,
 		.interrupt_num = ELE_MU_IRQ,
-		.tz = 0,
-		.did = ELE_MU_DID,
+		.rsvd2 = 0,
 		.priority = 0,
 		.op_mode = 0,
-		.reserved = 0,
+		.rsvd3 = 0,
 	};
 	struct open_session_rsp {
 		uint32_t rsp_code;
@@ -435,6 +353,12 @@ static TEE_Result imx_ele_global_init(void)
 	uint32_t session_handle = 0;
 	uint32_t key_store_handle = 0;
 
+	res = imx_ele_sab_init();
+	if (res) {
+		EMSG("Failed to initialize Edgelock Enclave services");
+		goto err;
+	}
+
 	res = imx_ele_get_global_session_handle(&session_handle);
 	if (res) {
 		EMSG("Failed to open global session");
@@ -458,14 +382,10 @@ driver_init(imx_ele_global_init);
 #endif
 
 #if defined(CFG_MX93)
-TEE_Result tee_otp_get_hw_unique_key(struct tee_hw_unique_key *hwkey)
+static TEE_Result imx_ele_derive_key(const uint8_t *ctx, size_t ctx_size,
+				     uint8_t *key, size_t key_size)
 {
 	TEE_Result res = TEE_ERROR_GENERIC;
-	const char pattern[16] __aligned(CACHELINE_SIZE) = "TEE_for_HUK_ELE";
-	static uint8_t key[CACHELINE_SIZE] __aligned(CACHELINE_SIZE);
-	static bool is_fetched;
-	uint32_t msb = 0;
-	uint32_t lsb = 0;
 	struct key_derive_cmd {
 		uint32_t key_addr_msb;
 		uint32_t key_addr_lsb;
@@ -474,45 +394,65 @@ TEE_Result tee_otp_get_hw_unique_key(struct tee_hw_unique_key *hwkey)
 		uint16_t key_size;
 		uint16_t ctx_size;
 		uint32_t crc;
-	} __packed cmd = { };
+	} __packed cmd = {};
 	struct imx_mu_msg msg = {
 		.header.version = ELE_VERSION_BASELINE,
 		.header.size = SIZE_MSG_32(cmd),
 		.header.tag = ELE_REQUEST_TAG,
 		.header.command = ELE_CMD_DERIVE_KEY,
 	};
+	struct imx_ele_buf ele_ctx = {};
+	struct imx_ele_buf ele_key = {};
 
-	if (is_fetched)
+	assert(ctx && key);
+
+	if (key_size != 16 && key_size != 32)
+		return TEE_ERROR_BAD_PARAMETERS;
+
+	res = imx_ele_buf_alloc(&ele_ctx, ctx, ctx_size);
+	if (res)
 		goto out;
 
-	/*
-	 * Intermediate msb and lsb values are needed. Directly using
-	 * key_addr_msb and key_addr_lsb might be unaligned because of the
-	 * __packed attribute of key_derive_cmd {}
-	 */
-	reg_pair_from_64((uint64_t)virt_to_phys(key), &msb, &lsb);
+	res = imx_ele_buf_alloc(&ele_key, key, key_size);
+	if (res)
+		goto out;
 
-	cmd.key_addr_lsb = lsb;
-	cmd.key_addr_msb = msb;
-	cmd.key_size = HW_UNIQUE_KEY_LENGTH;
+	cmd.key_addr_lsb = ele_key.paddr_lsb;
+	cmd.key_addr_msb = ele_key.paddr_msb;
+	cmd.key_size = key_size;
 
-	reg_pair_from_64((uint64_t)virt_to_phys((void *)pattern), &msb, &lsb);
-
-	cmd.ctx_addr_lsb = lsb;
-	cmd.ctx_addr_msb = msb;
-	cmd.ctx_size = sizeof(pattern);
+	cmd.ctx_addr_lsb = ele_ctx.paddr_lsb;
+	cmd.ctx_addr_msb = ele_ctx.paddr_msb;
+	cmd.ctx_size = ctx_size;
 
 	memcpy(msg.data.u8, &cmd, sizeof(cmd));
 	update_crc(&msg);
 
-	cache_operation(TEE_CACHEFLUSH, key, HW_UNIQUE_KEY_LENGTH);
-	cache_operation(TEE_CACHECLEAN, (void *)pattern, sizeof(pattern));
-
 	res = imx_ele_call(&msg);
 	if (res)
-		panic("failed to get the huk");
+		goto out;
 
-	cache_operation(TEE_CACHEINVALIDATE, key, HW_UNIQUE_KEY_LENGTH);
+	res = imx_ele_buf_copy(&ele_key, key, key_size);
+out:
+	imx_ele_buf_free(&ele_key);
+	imx_ele_buf_free(&ele_ctx);
+
+	return res;
+}
+
+TEE_Result tee_otp_get_hw_unique_key(struct tee_hw_unique_key *hwkey)
+{
+	static const char pattern[] = "TEE_for_HUK_ELE";
+	static uint8_t key[HW_UNIQUE_KEY_LENGTH];
+	static bool is_fetched;
+
+	if (is_fetched)
+		goto out;
+
+	if (imx_ele_derive_key((const uint8_t *)pattern, sizeof(pattern), key,
+			       sizeof(key)))
+		panic("Fail to get HUK from ELE");
+
 	is_fetched = true;
 out:
 	memcpy(hwkey->data, key,

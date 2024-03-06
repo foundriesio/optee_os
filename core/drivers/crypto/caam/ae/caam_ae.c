@@ -218,6 +218,10 @@ caam_ae_update_aad(struct drvcrypt_authenc_update_aad *dupdate)
 			goto out;
 		}
 
+		/* Initialize the AAD buffer if not already done */
+		if (!caam_ctx->buf_aad.max)
+			caam_ctx->buf_aad.max = dupdate->aad.length;
+
 		retstatus = caam_cpy_block_src(&caam_ctx->buf_aad, &aad, 0);
 		if (retstatus) {
 			ret = caam_status_to_tee_result(retstatus);

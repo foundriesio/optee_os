@@ -663,6 +663,14 @@ static enum caam_status caam_ae_do_block(struct caam_ae_ctx *caam_ctx,
 		if (src) {
 			caam_desc_fifo_load(desc, src, CLASS_1, MSG, LAST_C1);
 			caam_dmaobj_cache_push(src);
+		} else {
+			/*
+			 * Add the input data of 0 bytes to start
+			 * algorithm by setting the input data size
+			 */
+			caam_desc_add_word(desc,
+					   FIFO_LD(CLASS_1, MSG, LAST_C1, 0));
+			caam_desc_add_ptr(desc, 0);
 		}
 
 		/* Store the output data if any */
@@ -775,7 +783,7 @@ TEE_Result caam_ae_do_update(struct caam_ae_ctx *caam_ctx,
 		if (!last) {
 			ret = TEE_SUCCESS;
 			goto end_cipher_post;
-		} else {
+		} else if (do_init) {
 			retstatus = caam_ae_do_oneshot(caam_ctx,
 						       caam_ctx->encrypt, NULL,
 						       NULL, caam_aad_ptr);
@@ -784,12 +792,32 @@ TEE_Result caam_ae_do_update(struct caam_ae_ctx *caam_ctx,
 
 			/* Nothing to post on last update operation */
 			goto end_cipher;
+		} else {
+			retstatus = caam_ae_do_block(caam_ctx, true,
+						     caam_ctx->encrypt, NULL,
+						     NULL, true);
+
+			ret = caam_status_to_tee_result(retstatus);
+
+			/* Nothing to post on last update operation */
+			goto end_cipher;
 		}
 	}
 
-	ret = caam_dmaobj_init_input(&caam_src, src->data, src->length);
-	if (ret)
-		goto end_cipher;
+	if (src->length) {
+		ret = caam_dmaobj_init_input(&caam_src, src->data, src->length);
+		if (ret)
+			goto end_cipher;
+	} else {
+		/* Init the buffer with saved data */
+		ret = caam_dmaobj_init_input(&caam_src,
+					     caam_ctx->blockbuf.buf.data,
+					     caam_ctx->blockbuf.filled);
+		if (ret)
+			goto end_cipher;
+
+		caam_ctx->blockbuf.filled = 0;
+	}
 
 	ret = caam_dmaobj_init_output(&caam_dst, dst->data, dst->length,
 				      size_todo);

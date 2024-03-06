@@ -307,6 +307,15 @@ static void caam_ae_copy_state(void *dst_ctx, void *src_ctx)
 	dst->buf_aad.max = src->buf_aad.max;
 	dst->do_block = src->do_block;
 
+	caam_free_buf(&dst->key);
+	caam_free_buf(&dst->nonce);
+	caam_free_buf(&dst->ctx);
+	caam_free_buf(&dst->initial_ctx);
+	caam_free_buf(&dst->buf_aad.buf);
+	caam_free_buf(&dst->blockbuf.buf);
+	dst->buf_aad.filled = 0;
+	dst->blockbuf.filled = 0;
+
 	if (src->blockbuf.filled) {
 		struct caambuf srcdata = { .data = src->blockbuf.buf.data,
 					   .length = src->blockbuf.filled };

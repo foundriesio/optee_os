@@ -336,14 +336,14 @@ TEE_Result caam_ae_final_gcm(struct drvcrypt_authenc_final *dfinal)
 		return ret;
 
 	if (caam_ctx->tag_length) {
+		if (dfinal->tag.length < caam_ctx->tag_length)
+			return TEE_ERROR_SHORT_BUFFER;
+
 		if (caam_ctx->encrypt) {
 			memcpy(dfinal->tag.data, caam_ctx->ctx.data,
 			       caam_ctx->tag_length);
 			dfinal->tag.length = caam_ctx->tag_length;
 		} else {
-			if (dfinal->tag.length != caam_ctx->tag_length)
-				return TEE_ERROR_MAC_INVALID;
-
 			if (consttime_memcmp(dfinal->tag.data,
 					     caam_ctx->ctx.data,
 					     caam_ctx->tag_length))

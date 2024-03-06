@@ -192,6 +192,9 @@ TEE_Result caam_ae_final_ccm(struct drvcrypt_authenc_final *dfinal)
 		return ret;
 
 	if (caam_ctx->tag_length) {
+		if (dfinal->tag.length < caam_ctx->tag_length)
+			return TEE_ERROR_SHORT_BUFFER;
+
 		if (caam_ctx->encrypt) {
 			encrypted_tag = caam_ctx->ctx.data +
 					(2 * AES_CCM_MAX_TAG_LEN);
@@ -201,9 +204,6 @@ TEE_Result caam_ae_final_ccm(struct drvcrypt_authenc_final *dfinal)
 			dfinal->tag.length = caam_ctx->tag_length;
 		} else {
 			encrypted_tag = caam_ctx->ctx.data;
-
-			if (dfinal->tag.length != caam_ctx->tag_length)
-				return TEE_ERROR_MAC_INVALID;
 
 			mod_op.n.length = caam_ctx->tag_length;
 			mod_op.a.data = encrypted_tag;

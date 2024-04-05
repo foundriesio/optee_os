@@ -218,8 +218,8 @@ TEE_Result caam_ae_final_ccm(struct drvcrypt_authenc_final *dfinal)
 			if (ret)
 				return ret;
 
-			if (memcmp(dfinal->tag.data, encrypted_tag,
-				   caam_ctx->tag_length))
+			if (consttime_memcmp(dfinal->tag.data, encrypted_tag,
+					     caam_ctx->tag_length))
 				return TEE_ERROR_MAC_INVALID;
 		}
 	}

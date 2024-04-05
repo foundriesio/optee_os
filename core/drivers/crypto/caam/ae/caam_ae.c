@@ -460,7 +460,7 @@ static void store_context(struct caam_ae_ctx *caam_ctx)
  * @encrypt  Encrypt or decrypt direction
  * @src      Source data to encrypt/decrypt
  * @dst      [out] Destination data encrypted/decrypted
- * @aad      Additional data
+ * @aad      Additional Authenticated data
  */
 static enum caam_status caam_ae_do_oneshot(struct caam_ae_ctx *caam_ctx,
 					   bool encrypt, struct caamdmaobj *src,
@@ -552,7 +552,7 @@ static enum caam_status caam_ae_do_oneshot(struct caam_ae_ctx *caam_ctx,
  *
  * @caam_ctx AE Cipher context
  * @encrypt  Encrypt or decrypt direction
- * @aad      Additional data
+ * @aad      Additional Authenticated data
  */
 static enum caam_status caam_ae_do_init(struct caam_ae_ctx *caam_ctx,
 					bool encrypt, struct caamdmaobj *aad)
@@ -600,6 +600,9 @@ static enum caam_status caam_ae_do_init(struct caam_ae_ctx *caam_ctx,
 	if (aad) {
 		caam_desc_fifo_load(desc, aad, CLASS_1, AAD, LAST_C1);
 		caam_dmaobj_cache_push(aad);
+	} else if (!caam_ctx->nonce.data) {
+		/* Required for null aad (initialize nonce only) */
+		caam_desc_add_word(desc, FIFO_LD_IMM(CLASS_1, AAD, LAST_C1, 0));
 	}
 
 	store_context(caam_ctx);
@@ -732,6 +735,11 @@ TEE_Result caam_ae_do_update(struct caam_ae_ctx *caam_ctx,
 
 	do_init = (caam_ctx->ctx.length == 0);
 
+	/*
+	 * According to the TEE API function TEE_AEUpdateAAD
+	 * Additional Authenticated data buffer could only be loaded
+	 * at Init state
+	 */
 	if (do_init && caam_ctx->buf_aad.filled) {
 		size_t aad_length = caam_ctx->buf_aad.filled;
 
@@ -847,29 +855,28 @@ TEE_Result caam_ae_do_update(struct caam_ae_ctx *caam_ctx,
 		caam_ctx->blockbuf.filled = 0;
 	}
 
+	if (do_init) {
+		retstatus = caam_ae_do_init(caam_ctx, caam_ctx->encrypt,
+					    caam_aad_ptr);
+
+		if (retstatus) {
+			ret = caam_status_to_tee_result(retstatus);
+			goto end_cipher;
+		}
+		do_init = false;
+	}
+
 	size_done = size_todo;
 	dst->length = 0;
 	for (offset = 0; size_todo;
 	     offset += size_done, size_todo -= size_done) {
-		AE_TRACE("Do input %zu bytes, offset %zu", size_done,
-			 offset);
+		AE_TRACE("Do input %zu bytes, offset %zu", size_done, offset);
 
 		ret = caam_dmaobj_sgtbuf_inout_build(&caam_src, &caam_dst,
 						     &size_done, offset,
 						     size_todo);
 		if (ret)
 			goto end_cipher;
-
-		if (do_init) {
-			retstatus = caam_ae_do_init(caam_ctx, caam_ctx->encrypt,
-						    caam_aad_ptr);
-
-			if (retstatus) {
-				ret = caam_status_to_tee_result(retstatus);
-				goto end_cipher;
-			}
-			do_init = false;
-		}
 
 		/* is it last update and last block ? */
 		if (last && size_todo == size_done)

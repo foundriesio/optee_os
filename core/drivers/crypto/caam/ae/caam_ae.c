@@ -401,7 +401,7 @@ static void add_initial_context(struct caam_ae_ctx *caam_ctx)
 		caam_desc_add_ptr(desc, caam_ctx->initial_ctx.paddr);
 
 		/* Ensure Context register data are not in cache */
-		cache_operation(TEE_CACHEINVALIDATE, caam_ctx->initial_ctx.data,
+		cache_operation(TEE_CACHECLEAN, caam_ctx->initial_ctx.data,
 				length);
 	}
 }
@@ -445,7 +445,7 @@ static void store_context(struct caam_ae_ctx *caam_ctx)
 	caam_desc_add_ptr(desc, caam_ctx->ctx.paddr);
 
 	/* Ensure Context register data are not in cache */
-	cache_operation(TEE_CACHEINVALIDATE, caam_ctx->ctx.data,
+	cache_operation(TEE_CACHECLEAN, caam_ctx->ctx.data,
 			caam_ctx->ctx.length);
 }
 
@@ -500,7 +500,7 @@ static enum caam_status caam_ae_do_oneshot(struct caam_ae_ctx *caam_ctx,
 		caam_desc_add_ptr(desc, caam_ctx->nonce.paddr);
 
 		/* Ensure Nonce data are not in cache */
-		cache_operation(TEE_CACHEINVALIDATE, caam_ctx->nonce.data,
+		cache_operation(TEE_CACHECLEAN, caam_ctx->nonce.data,
 				caam_ctx->nonce.length);
 	}
 
@@ -589,7 +589,7 @@ static enum caam_status caam_ae_do_init(struct caam_ae_ctx *caam_ctx,
 		caam_desc_add_ptr(desc, caam_ctx->nonce.paddr);
 
 		/* Ensure Nonce data are not in cache */
-		cache_operation(TEE_CACHEINVALIDATE, caam_ctx->nonce.data,
+		cache_operation(TEE_CACHECLEAN, caam_ctx->nonce.data,
 				caam_ctx->nonce.length);
 	}
 

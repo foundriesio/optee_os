@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-2-Clause
 /**
- * Copyright 2017-2021 NXP
+ * Copyright 2017-2021, 2024 NXP
  *
  * Brief   CAAM Random Number Generator manager.
  *         Implementation of RNG functions.
@@ -10,6 +10,7 @@
 #include <caam_hal_rng.h>
 #include <caam_jr.h>
 #include <caam_rng.h>
+#include <caam_utils_delay.h>
 #include <caam_utils_mem.h>
 #include <crypto/crypto.h>
 #include <kernel/panic.h>
@@ -246,6 +247,17 @@ static enum caam_status do_check_data(void)
 		return CAAM_FAILURE;
 
 	default:
+		/*
+		 * Adding a delay here so that, both RNG buffers get filled
+		 * at the same time.
+		 * Without this HAB boot fails, because of enablement of
+		 * PR (Prediction Resistance) while generating the RNG data.
+		 * PR enablement doesn't have direct relation with HAB boot.
+		 * But RNG generation with PR creates some timing issue,
+		 * which leaves CAAM in undefined state, when HAB tries to
+		 * use CAAM, it fails.
+		 */
+		caam_udelay(2000);
 		/* Wait until one of the data buffer completes */
 		do {
 			wait_jobs = 0;

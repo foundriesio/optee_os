@@ -402,7 +402,7 @@ err:
 }
 driver_init(imx_ele_global_init);
 
-#if defined(CFG_MX93) || defined(CFG_MX91)
+#if defined(CFG_MX93) || defined(CFG_MX91) || defined(CFG_MX95)
 /*
  * Key buffer pointer must be align on a cache line
  * as cache invalidate is done after key derivation.

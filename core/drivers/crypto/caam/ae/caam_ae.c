@@ -268,14 +268,23 @@ caam_ae_update_payload(struct drvcrypt_authenc_update_payload *dupdate)
 static TEE_Result caam_ae_final(struct drvcrypt_authenc_final *dfinal)
 {
 	struct caam_ae_ctx *caam_ctx = NULL;
+	TEE_Result ret = TEE_ERROR_BAD_PARAMETERS;
 
 	assert(dfinal);
 
 	caam_ctx = (struct caam_ae_ctx *)dfinal->ctx;
 	if (!caam_ctx)
-		return TEE_ERROR_BAD_PARAMETERS;
+		return ret;
 
-	return caam_ctx->alg->final(dfinal);
+	ret = caam_ctx->alg->final(dfinal);
+
+	caam_free_buf(&caam_ctx->nonce);
+	caam_free_buf(&caam_ctx->ctx);
+	caam_free_buf(&caam_ctx->initial_ctx);
+	caam_free_buf(&caam_ctx->buf_aad.buf);
+	caam_free_buf(&caam_ctx->blockbuf.buf);
+
+	return ret;
 }
 
 /*

@@ -155,6 +155,14 @@ CFG_CAAM_JR_DISABLE_NODE ?= y
 # CAAM_KEY_BLACK_ECB|CCM -> 4156 bits
 CFG_CORE_BIGNUM_MAX_BITS ?= 4156
 
+# Define if Prediction Resistance is enabled for every Random number
+# request to CAAM.
+# Performance of getting Random number from CAAM drastically decreases with
+# PR enabled.
+# Users who want CAAM RNG to get reseeded on every Random number request
+# can set this flag to y.
+CFG_CAAM_RNG_RUNTIME_PR ?= n
+
 # Enable CAAM non-crypto drivers
 $(foreach drv, $(caam-drivers), $(eval CFG_NXP_CAAM_$(drv)_DRV ?= y))
 

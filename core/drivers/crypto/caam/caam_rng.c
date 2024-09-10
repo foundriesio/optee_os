@@ -107,8 +107,10 @@ static TEE_Result do_rng_read(uint8_t *buf, size_t len)
 		goto exit;
 	}
 
-	if (rng_privdata->pr_enabled)
-		op |= ALGO_RNG_PR;
+	if (IS_ENABLED(CFG_CAAM_RNG_RUNTIME_PR)) {
+		if (rng_privdata->pr_enabled)
+			op |= ALGO_RNG_PR;
+	}
 
 	caam_desc_init(desc);
 	caam_desc_add_word(desc, DESC_HEADER(0));

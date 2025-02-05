@@ -1415,7 +1415,7 @@ void __weak boot_init_primary_late(unsigned long fdt __unused,
 {
 	size_t fdt_size = CFG_DTB_MAX_SIZE;
 #ifdef CFG_OVERLAY_ADDR
-	struct dt_descriptor *dt = &boot_arg_fdt;
+	struct dt_descriptor *dt = get_external_dt_desc();
 	dt->is_overlay = 0;
 #endif
 	if (IS_ENABLED(CFG_TRANSFER_LIST) && mapped_tl) {

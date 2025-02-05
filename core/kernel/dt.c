@@ -618,7 +618,11 @@ void *get_external_dt(void)
 	return external_dt.blob;
 }
 
+#ifdef CFG_OVERLAY_ADDR
+TEE_Result release_external_dt(void)
+#else
 static TEE_Result release_external_dt(void)
+#endif
 {
 	int ret = 0;
 	paddr_t pa_dt = 0;

@@ -1194,6 +1194,9 @@ void __weak boot_init_primary_late(unsigned long fdt __unused,
  */
 void __weak boot_init_primary_final(void)
 {
+#ifdef CFG_OVERLAY_ADDR
+	struct dt_descriptor *dt = get_external_dt_desc();
+#endif
 	if (!IS_ENABLED(CFG_NS_VIRTUALIZATION))
 		call_driver_initcalls();
 

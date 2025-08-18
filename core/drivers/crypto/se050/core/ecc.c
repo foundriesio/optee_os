@@ -439,7 +439,9 @@ static TEE_Result shared_secret(struct ecc_keypair *private_key,
 	if (private_key->curve != public_key->curve)
 		return TEE_ERROR_BAD_PARAMETERS;
 
-	ret = ecc_get_key_size(private_key->curve, 0, &key_bytes, &key_bits);
+	ret = ecc_get_key_size(private_key->curve,
+			       TEE_ALG_ECDH_DERIVE_SHARED_SECRET,
+			       &key_bytes, &key_bits);
 	if (ret) {
 		if (ret != TEE_ERROR_NOT_IMPLEMENTED)
 			return ret;
